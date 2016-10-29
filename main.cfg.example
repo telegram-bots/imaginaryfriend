@@ -1,0 +1,14 @@
+[bot]
+token=
+name=
+
+[logging]
+level=INFO
+
+[db]
+driver=
+host=
+database=
+user=
+password=
+prefix=
