@@ -1,13 +1,11 @@
 import logging
 import random
 import urllib.request
-import sqlite3
 
 from telegram.ext import Updater
 from telegram.ext import MessageHandler, Filters
-from orator import DatabaseManager, Model
-from src.domain.message import Message
-
+from orator.orm import Model
+from orator import DatabaseManager
 
 class Bot:
     messages = [
@@ -25,28 +23,8 @@ class Bot:
         self.dispatcher = self.updater.dispatcher
 
         Model.set_connection_resolver(DatabaseManager({'db': config['db']}))
-        self.create_table()
-
-    def create_table(self):
-        connection = sqlite3.connect(self.config['db']['database'])
-        cursor = connection.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS messages
-             (id INTEGER PRIMARY KEY,
-             chat_id text,
-             user_name text,
-             user_id text,
-             payload text,
-             created_at TIMESTAMP,
-             updated_at TIMESTAMP)''')
-        connection.commit()
-        connection.close()
 
     def handler(self, bot, update):
-        Message.create(chat_id=update.message.chat_id,
-                       user_name=update.message.from_user.username,
-                       user_id=update.message.from_user.id,
-                       payload=update.message.text)
-
         value = random.randint(0, 2)
         if value == 1:
             message = random.choice(self.messages)
