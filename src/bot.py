@@ -1,6 +1,4 @@
 import logging
-import random
-import urllib.request
 
 from telegram.ext import Updater
 from telegram.ext import MessageHandler, Filters

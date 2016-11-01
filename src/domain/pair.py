@@ -2,7 +2,9 @@ from orator.orm import Model
 from orator.orm import belongs_to
 from orator.orm import has_many
 
-from . import (Reply, Chat, Word)
+import src.domain.reply
+import src.domain.chat
+import src.domain.word
 
 
 class Pair(Model):
@@ -14,11 +16,11 @@ class Pair(Model):
 
     @has_many
     def replies(self):
-        return Reply
+        return src.domain.reply.Reply
 
     @belongs_to
     def chat(self):
-        return Chat
+        return src.domain.chat.Chat
 
     @staticmethod
     def generate(message):
@@ -27,7 +29,9 @@ class Pair(Model):
 
     @staticmethod
     def learn(message):
-        Word.learn(message.words)
+        src.domain.word.Word.learn(message.words)
+
+        print("Msg words: " + str(message.words))
 
         words = [None]
         for word in message.words:
@@ -37,20 +41,25 @@ class Pair(Model):
         if words[-1:] is not None:
             words.append(None)
 
+        print("Words: "+str(words))
+
         while any(word for word in words):
             trigram = words[:3]
             words.pop(0)
-            trigram_word_ids = list(map(lambda x: None if x is None else Word.where('word', word).first().id, trigram))
-
+            print("Trigram: " + str(trigram))
+            trigram_word_ids = list(map(lambda x: None if x is None else src.domain.word.Word.where('word', word).first().id, trigram))
+            print("TrigramId: " + str(trigram_word_ids))
             pair = Pair.first_or_create(chat_id=message.chat.id,
                                         first_id=trigram_word_ids[0],
                                         second_id=trigram_word_ids[1])
-            reply = pair.replies().where('word_id', trigram_word_ids[2]).first()
+            last_trigram_id = trigram_word_ids[2] if len(trigram_word_ids) == 3 else None
+            reply = pair.replies().where('word_id', last_trigram_id).first()
 
             if reply is not None:
-                reply.increment('count')
+                reply.count += 1
+                reply.save()
             else:
-                Reply.create(pair_id=pair.id, word_id=trigram_word_ids[2])
+                src.domain.reply.Reply.create(pair_id=pair.id, word_id=last_trigram_id)
 
 
     # @staticmethod

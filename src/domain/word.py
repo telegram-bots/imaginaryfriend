@@ -1,18 +1,21 @@
 from orator.orm import Model
 from orator.orm import has_many
-from . import Chat
+
+import src.domain.chat
 
 
 class Word(Model):
     __guarded__ = ['id']
+    __timestamps__ = False
 
     @has_many
     def chats(self):
-        return Chat
+        return src.domain.chat.Chat
 
     @staticmethod
     def learn(words):
         existing_words = Word.where_in('word', words).get().pluck('word').all()
         new_words = list(set([word for word in words if word not in existing_words]))
         if len(new_words):
-            Word.insert(zip(['word'] * len(new_words), new_words))
+            for word in new_words:
+                Word.create(word=word)

@@ -1,14 +1,15 @@
-from src.domain import (Chat, Pair)
 import logging
 import random
 
+import src.domain.chat as chat
+import src.domain.pair as pair
 
 class Message:
     def __init__(self, bot, message, config):
         self.bot = bot
         self.message = message
         self.config = config
-        self.chat = Chat.get_chat(message)
+        self.chat = chat.Chat.get_chat(message)
         self.chat.migrate_to_chat_id = message.migrate_to_chat_id
 
         if self.has_text():
@@ -41,7 +42,8 @@ class Message:
         return self.message.chat.type == 'private'
 
     def is_reply_to_bot(self):
-        return self.message.reply_to_message.from_user.username == self.config['bot']['name']
+        return self.message.reply_to_message is not None \
+               and self.message.reply_to_message.from_user.username == self.config['bot']['name']
 
     def is_random_answer(self):
         return random.randint(1, 100) < self.chat.random_chance
@@ -58,18 +60,18 @@ class Message:
         self.bot.sendMessage(chat_id=self.chat.telegram_id, reply_to_message_id=self.message.message_id, text=message)
 
     def __process_message(self):
-        Pair.learn(self)
+        pair.Pair.learn(self)
 
         if self.has_anchors() or self.is_private() or self.is_reply_to_bot() or self.is_random_answer():
-            reply = Pair.generate(self)
+            reply = pair.Pair.generate(self)
             if reply != '':
                 self.__answer(reply)
 
     def __get_words(self):
-        text = self.text
+        text = list(self.text)
         for entity in self.message.entities:
-            text[entity.offset, entity.length] = ' ' * entity.length
-        result = map(lambda x: x.lower(), text.split(' '))
+            text[entity.offset:entity.length] = ' ' * entity.length
+        result = list(map(lambda x: x.lower(), ''.join(text).split(' ')))
         logging.debug("[chat %s %s get_words] %s" % (self.chat.chat_type, self.chat.telegram_id, result))
 
         return result

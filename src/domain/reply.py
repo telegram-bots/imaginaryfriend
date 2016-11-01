@@ -2,7 +2,8 @@ from orator.orm import Model
 from orator.orm import belongs_to
 from orator.orm import belongs_to_many
 
-from . import (Pair, Word)
+import src.domain.pair
+import src.domain.word
 
 
 class Reply(Model):
@@ -10,8 +11,8 @@ class Reply(Model):
 
     @belongs_to_many
     def pairs(self):
-        return Pair
+        return src.domain.pair.Pair
 
     @belongs_to
     def word(self):
-        return Word
+        return src.domain.word.Word

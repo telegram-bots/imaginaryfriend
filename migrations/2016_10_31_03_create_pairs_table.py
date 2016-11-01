@@ -11,11 +11,11 @@ class CreatePairsTable(Migration):
             table.increments('id')
             table.integer('chat_id').unsigned()
             table.foreign('chat_id').references('id').on('chats')
-            table.integer('first_id').unsigned()
-            table.foreign('first_id').references('id').on('replies').nullable()
-            table.integer('second_id').unsigned()
-            table.foreign('second_id').references('id').on('replies').nullable()
-            table.timestamp('created_at')
+            table.integer('first_id').unsigned().nullable()
+            #table.foreign('first_id').references('id').on('replies').nullable()
+            table.integer('second_id').unsigned().nullable()
+            #table.foreign('second_id').references('id').on('replies').nullable()
+            table.timestamps()
 
     def down(self):
         """
