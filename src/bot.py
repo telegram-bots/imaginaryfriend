@@ -6,16 +6,19 @@ from telegram.ext import Updater
 from telegram.ext import MessageHandler, Filters
 from orator.orm import Model
 from orator import DatabaseManager
+from src.message import Message
+
 
 class Bot:
-    messages = [
-        'Я кот, нееште меня!',
-        'Не обижайте пиздюка!',
-        'Ты няшка :3',
-        'Всем по котейке!',
-        'Юра, го бильярд',
-        'Бога нет.',
-    ]
+    # TODO Move and use
+    # messages = [
+    #     'Я кот, нееште меня!',
+    #     'Не обижайте пиздюка!',
+    #     'Ты няшка :3',
+    #     'Всем по котейке!',
+    #     'Юра, го бильярд',
+    #     'Бога нет.',
+    # ]
 
     def __init__(self, config):
         self.config = config
@@ -25,21 +28,7 @@ class Bot:
         Model.set_connection_resolver(DatabaseManager({'db': config['db']}))
 
     def handler(self, bot, update):
-        value = random.randint(0, 2)
-        if value == 1:
-            message = random.choice(self.messages)
-            logging.debug("Sending random message: " + message)
-            bot.sendMessage(chat_id=update.message.chat_id, text=message)
-        elif value == 2:
-            message = update.message.text
-            logging.debug("Mirroring message: " + message)
-            bot.sendMessage(chat_id=update.message.chat_id, text=message)
-        else:
-            opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler)
-            request = opener.open('http://thecatapi.com/api/images/get?format=src')
-            url = request.url
-            logging.debug("Sending random cat picture: " + url)
-            bot.sendPhoto(chat_id=update.message.chat_id, photo=url)
+        Message(bot=bot, message=update.message, config=self.config).process()
 
     def run(self):
         logging.info("Bot started")

@@ -1,11 +1,13 @@
 from orator.orm import Model
-from orator.orm import belongs_to_many
 from orator.orm import belongs_to
-from src.domain.pair import Pair
-from src.domain.word import Word
+from orator.orm import belongs_to_many
+
+from . import (Pair, Word)
 
 
 class Reply(Model):
+    __guarded__ = ['id']
+
     @belongs_to_many
     def pairs(self):
         return Pair
