@@ -4,6 +4,7 @@ import random
 import src.domain.chat as chat
 import src.domain.pair as pair
 
+
 class Message:
     def __init__(self, bot, message, config):
         self.bot = bot
@@ -13,7 +14,8 @@ class Message:
         self.chat.migrate_to_chat_id = message.migrate_to_chat_id
 
         if self.has_text():
-            logging.debug("[chat %s %s bare_text] %s" %(self.chat.chat_type, self.chat.telegram_id, self.message.text))
+            logging.debug("[chat %s %s bare_text] %s" %
+                          (self.chat.chat_type, self.chat.telegram_id, self.message.text))
             self.text = message.text
             self.words = self.__get_words()
             self.command = self.__get_command() if self.text[0] == '/' else None
@@ -36,33 +38,44 @@ class Message:
         return self.message.entities is not None
 
     def has_anchors(self):
-        return self.has_text() and (any(x in self.words for x in self.config['bot']['anchors'].split(',')))
+        return self.has_text() and \
+               (any(x in self.message.text.split(' ') for x in self.config['bot']['anchors'].split(',')))
 
     def is_private(self):
         return self.message.chat.type == 'private'
 
     def is_reply_to_bot(self):
-        return self.message.reply_to_message is not None \
-               and self.message.reply_to_message.from_user.username == self.config['bot']['name']
+        reply_to_message = getattr(self.message, 'reply_to_message', None)
+        from_user = getattr(reply_to_message, 'from_user', None)
+        user_name = getattr(from_user, 'username', None)
+
+        return user_name == self.config['bot']['name']
 
     def is_random_answer(self):
-        return random.randint(1, 100) < self.chat.random_chance
+        return random.randint(0, 100) < self.chat.random_chance
 
     def is_command(self):
         return self.command is not None
 
     def __answer(self, message):
-        logging.debug("[Chat %s %s answer] %s" % (self.chat.chat_type, self.chat.telegram_id, message))
+        logging.debug("[Chat %s %s answer] %s" %
+                      (self.chat.chat_type, self.chat.telegram_id, message))
         self.bot.sendMessage(chat_id=self.chat.telegram_id, text=message)
 
     def __reply(self, message):
-        logging.debug("[Chat %s %s reply] %s" % (self.chat.chat_type, self.chat.telegram_id, message))
-        self.bot.sendMessage(chat_id=self.chat.telegram_id, reply_to_message_id=self.message.message_id, text=message)
+        logging.debug("[Chat %s %s reply] %s" %
+                      (self.chat.chat_type, self.chat.telegram_id, message))
+        self.bot.sendMessage(chat_id=self.chat.telegram_id,
+                             reply_to_message_id=self.message.message_id,
+                             text=message)
 
     def __process_message(self):
         pair.Pair.learn(self)
 
-        if self.has_anchors() or self.is_private() or self.is_reply_to_bot() or self.is_random_answer():
+        if self.has_anchors() \
+                or self.is_private() \
+                or self.is_reply_to_bot() \
+                or self.is_random_answer():
             reply = pair.Pair.generate(self)
             if reply != '':
                 self.__answer(reply)
@@ -72,7 +85,8 @@ class Message:
         for entity in self.message.entities:
             text[entity.offset:entity.length] = ' ' * entity.length
         result = list(map(lambda x: x.lower(), ''.join(text).split(' ')))
-        logging.debug("[chat %s %s get_words] %s" % (self.chat.chat_type, self.chat.telegram_id, result))
+        logging.debug("[chat %s %s get_words] %s" %
+                      (self.chat.chat_type, self.chat.telegram_id, result))
 
         return result
 
