@@ -52,7 +52,7 @@ class Message:
         return user_name == self.config['bot']['name']
 
     def is_random_answer(self):
-        return random.randint(0, 100) < self.chat.random_chance
+        return random.randint(0, 100) < getattr(self.chat, 'random_chance', 5)
 
     def is_command(self):
         return self.command is not None
@@ -84,7 +84,7 @@ class Message:
         text = list(self.text)
         for entity in self.message.entities:
             text[entity.offset:entity.length] = ' ' * entity.length
-        result = list(map(lambda x: x.lower(), ''.join(text).split(' ')))
+        result = list(filter(None, map(lambda x: x.lower(), ''.join(text).split(' '))))
         logging.debug("[chat %s %s get_words] %s" %
                       (self.chat.chat_type, self.chat.telegram_id, result))
 

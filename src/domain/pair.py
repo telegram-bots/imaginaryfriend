@@ -77,33 +77,41 @@ class Pair(Model):
 
     @staticmethod
     def __generate_sentence(message, word_ids):
-        sentence = ''
+        sentences = []
         safety_counter = 50
         first_word = None
         second_words = list(word_ids)
+
         while safety_counter > 0:
             pair = Pair.__get_pair(chat_id=message.chat.id, first_id=first_word, second_ids=second_words)
             replies = getattr(pair, 'replies', [])
             safety_counter -= 1
+
             if pair is None or len(replies) == 0:
                 continue
+
             reply = random.choice(replies.all())
             first_word = pair.second.id
-            second_words = getattr(reply.word, 'id', [])
-            if sentence == '':
-                sentence = Pair.__capitalize(pair.second.word) + " "
+            second_words = getattr(reply.word, 'id')
+            if second_words is not None:
+                second_words = [second_words]
+
+            if len(sentences) == 0:
+                sentences.append(Pair.capitalize(pair.second.word) + " ")
                 word_ids.remove(pair.second.id)
+
             reply_word = getattr(reply.word, 'word', '')
-            if reply_word not in sentence and Pair.__capitalize(reply_word) not in sentence:
-                sentence += reply_word
-        sentence = sentence.strip()
+            if reply_word not in sentences and Pair.capitalize(reply_word) not in sentences:
+                sentences.append(reply_word)
+
+        sentence = ' '.join(sentences).strip()
         if sentence[-1:] not in Pair.end_sentence:
             sentence += random.choice(list(Pair.end_sentence))
 
         return sentence
 
     @staticmethod
-    def __capitalize(string):
+    def capitalize(string):
         return string[:1].upper() + string[1:]
 
     @staticmethod
