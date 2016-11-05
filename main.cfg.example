@@ -1,6 +1,7 @@
 [bot]
 token=
 name=
+anchors=
 
 [logging]
 level=INFO
@@ -12,3 +13,4 @@ database=
 user=
 password=
 prefix=
+log_queries=
