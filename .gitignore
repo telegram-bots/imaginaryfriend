@@ -1,37 +1,27 @@
-*.pyc
 *.html
-*.webarchive
-*.txt
-_core/*
-_generator/*
-storage
+*.pyc
+*.rb
 *.sublime-workspace
-legacy
-legacy2
+*.txt
 logging.cfg
-
+storage
+venv
+ruby*/
 
 ### Linux ###
 *~
-
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
-
 # KDE directory preferences
 .directory
-
 # Linux trash folder which might appear on any partition or disk
 .Trash-*
-
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
-
-
 ### macOS ###
 *.DS_Store
 .AppleDouble
 .LSOverride
-
 # Icon must end with two \r
 Icon
 # Thumbnails
