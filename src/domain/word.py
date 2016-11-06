@@ -15,7 +15,9 @@ class Word(Model):
     @staticmethod
     def learn(words):
         existing_words = Word.where_in('word', words).get().pluck('word').all()
-        new_words = list(set([word for word in words if word not in existing_words]))
+        
+        new_words = {word for word in words}.difference(existing_words)
+
         if len(new_words):
             for word in new_words:
                 Word.create(word=word)

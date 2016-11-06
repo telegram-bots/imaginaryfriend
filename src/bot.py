@@ -10,11 +10,7 @@ from src.message import Message
 class Bot:
     # TODO Move and use
     # messages = [
-    #     'Я кот, нееште меня!',
-    #     'Не обижайте пиздюка!',
     #     'Ты няшка :3',
-    #     'Всем по котейке!',
-    #     'Юра, го бильярд',
     #     'Бога нет.',
     # ]
 
