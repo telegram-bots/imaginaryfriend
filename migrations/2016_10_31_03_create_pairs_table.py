@@ -9,12 +9,13 @@ class CreatePairsTable(Migration):
         """
         with self.schema.create('pairs') as table:
             table.increments('id')
-            table.integer('chat_id').unsigned()
-            table.foreign('chat_id').references('id').on('chats')
-            table.integer('first_id').unsigned().nullable()
-            #table.foreign('first_id').references('id').on('replies').nullable()
-            table.integer('second_id').unsigned().nullable()
-            #table.foreign('second_id').references('id').on('replies').nullable()
+            table.integer('chat_id')
+            table.integer('first_id').nullable()
+            table.integer('second_id').nullable()
+            # table.unique(
+            #     ['chat_id', 'first_id', 'second_id'],
+            #     name='unique_pairs_idx'
+            # )
             table.timestamps()
 
     def down(self):

@@ -8,6 +8,7 @@ import src.domain.word
 
 class Reply(Model):
     __guarded__ = ['id']
+    __timestamps__ = False
 
     @belongs_to_many
     def pairs(self):

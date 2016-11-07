@@ -9,7 +9,7 @@ class CreateChatsTable(Migration):
         """
         with self.schema.create('chats') as table:
             table.increments('id')
-            table.big_integer('telegram_id').unsigned()
+            table.integer('telegram_id').unique()
             table.string('chat_type')
             table.integer('random_chance').default(5)
             table.timestamps()

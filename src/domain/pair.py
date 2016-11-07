@@ -1,9 +1,10 @@
-import random
 from datetime import datetime, timedelta
 
 from orator.orm import Model
 from orator.orm import belongs_to
 from orator.orm import has_many
+
+from src.utils import *
 
 import src.domain.chat
 import src.domain.reply
@@ -54,18 +55,28 @@ class Pair(Model):
         words = [None]
         for word in message.words:
             words.append(word)
-            if word[-1:] in Pair.end_sentence:
+            if word[-1] in Pair.end_sentence:
                 words.append(None)
-        if words[-1:] is not None:
+        if words[-1] is not None:
             words.append(None)
 
         while any(word for word in words):
             trigram = words[:3]
             words.pop(0)
-            trigram_word_ids = list(map(lambda x: None if x is None else src.domain.word.Word.where('word', word).first().id, trigram))
-            pair = Pair.first_or_create(chat_id=message.chat.id,
-                                        first_id=trigram_word_ids[0],
-                                        second_id=trigram_word_ids[1])
+            trigram_word_ids = list(map(
+                lambda x: None if x is None else src.domain.word.Word.where('word', x).first().id,
+                trigram
+            ))
+
+            pair = Pair.where('chat_id', message.chat.id)\
+                .where('first_id', trigram_word_ids[0])\
+                .where('second_id', trigram_word_ids[1])\
+                .first()
+            if pair is None:
+                pair = Pair.create(chat_id=message.chat.id,
+                                   first_id=trigram_word_ids[0],
+                                   second_id=trigram_word_ids[1])
+
             last_trigram_id = trigram_word_ids[2] if len(trigram_word_ids) == 3 else None
             reply = pair.replies().where('word_id', last_trigram_id).first()
 
@@ -92,27 +103,33 @@ class Pair(Model):
 
             reply = random.choice(replies.all())
             first_word = pair.second.id
-            second_words = getattr(reply.word, 'id')
-            if second_words is not None:
-                second_words = [second_words]
+
+            # TODO. WARNING! Do not try to fix, it's magic, i have no clue why
+            try:
+                second_words = [reply.word.id]
+            except AttributeError:
+                second_words = None
 
             if len(sentences) == 0:
-                sentences.append(Pair.capitalize(pair.second.word) + " ")
+                sentences.append(capitalize(pair.second.word) + " ")
                 word_ids.remove(pair.second.id)
 
-            reply_word = getattr(reply.word, 'word', '')
-            if reply_word not in sentences and Pair.capitalize(reply_word) not in sentences:
+            # TODO. WARNING! Do not try to fix, it's magic, i have no clue why
+            try:
+                reply_word = reply.word.word
+            except AttributeError:
+                reply_word = None
+
+            if reply_word is not None:
                 sentences.append(reply_word)
+            else:
+                break
 
         sentence = ' '.join(sentences).strip()
         if sentence[-1:] not in Pair.end_sentence:
             sentence += random.choice(list(Pair.end_sentence))
 
         return sentence
-
-    @staticmethod
-    def capitalize(string):
-        return string[:1].upper() + string[1:]
 
     @staticmethod
     def __get_pair(chat_id, first_id, second_ids):
@@ -125,4 +142,4 @@ class Pair(Model):
             .get()\
             .all()
 
-        return random.choice(pairs) if len(pairs) != 0 else None
+        return random_element(pairs)

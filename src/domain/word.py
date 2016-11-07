@@ -2,6 +2,7 @@ from orator.orm import Model
 from orator.orm import has_many
 
 import src.domain.chat
+from collections import OrderedDict
 
 
 class Word(Model):
@@ -15,9 +16,8 @@ class Word(Model):
     @staticmethod
     def learn(words):
         existing_words = Word.where_in('word', words).get().pluck('word').all()
-        
-        new_words = {word for word in words}.difference(existing_words)
+        # TODO. Слова должны быть уникальные И ТАКЖЕ ОБЯЗАТЕЛЬНО в оригинальном порядке
+        new_words = [word for word in OrderedDict.fromkeys(words).keys() if word not in existing_words]
 
-        if len(new_words):
-            for word in new_words:
-                Word.create(word=word)
+        for word in new_words:
+            Word.create(word=word)
