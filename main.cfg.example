@@ -2,6 +2,11 @@
 token=
 name=
 anchors=
+messages=
+
+[grammar]
+end_sentence=.!?
+all=.!?,;:
 
 [logging]
 level=INFO

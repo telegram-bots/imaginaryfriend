@@ -133,11 +133,12 @@ class Pair(Model):
 
     @staticmethod
     def __get_pair(chat_id, first_id, second_ids):
+        ten_minutes_ago = datetime.now() - timedelta(seconds=10 * 60)
         pairs = Pair.with_('replies')\
             .where('chat_id', chat_id)\
             .where('first_id', first_id)\
             .where_in('second_id', second_ids)\
-            .where('created_at', '<', (datetime.now() - timedelta(seconds=10 * 60)))\
+            .where('created_at', '<', ten_minutes_ago)\
             .limit(3)\
             .get()\
             .all()

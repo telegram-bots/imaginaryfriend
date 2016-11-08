@@ -8,12 +8,6 @@ from src.message import Message
 
 
 class Bot:
-    # TODO Move and use
-    # messages = [
-    #     'Ты няшка :3',
-    #     'Бога нет.',
-    # ]
-
     def __init__(self, config):
         self.config = config
         self.updater = Updater(token=config['bot']['token'])
