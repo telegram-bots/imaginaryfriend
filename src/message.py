@@ -14,7 +14,7 @@ class Message:
         self.chat    = chat.Chat.get_chat(message)
 
         if self.has_text():
-            logging.debug("[chat %s %s bare_text] %s" %
+            logging.debug("[Chat %s %s bare_text] %s" %
                           (self.chat.chat_type, 
                            self.chat.telegram_id, 
                            self.message.text))
@@ -77,7 +77,7 @@ class Message:
         return self.has_text() and self.text[0] == '/'
 
     def __answer(self, message):
-        logging.info("[Chat %s %s answer] %s" %
+        logging.debug("[Chat %s %s answer] %s" %
                       (self.chat.chat_type, 
                        self.chat.telegram_id, 
                        message))
@@ -85,7 +85,7 @@ class Message:
         self.bot.sendMessage(chat_id=self.chat.telegram_id, text=message)
 
     def __reply(self, message):
-        logging.info("[Chat %s %s reply] %s" %
+        logging.debug("[Chat %s %s reply] %s" %
                       (self.chat.chat_type, 
                        self.chat.telegram_id, 
                        message))
@@ -95,9 +95,17 @@ class Message:
                              text=message)
 
     def __process_sticker(self):
-        self.bot.sendSticker(chat_id=self.chat.telegram_id,
-                             reply_to_message_id=self.message.message_id,
-                             sticker="BQADAgADSAIAAkcGQwU-G-9SZUDTWAI")
+        if self.has_anchors() \
+                or self.is_private() \
+                or self.is_reply_to_bot() \
+                or self.is_random_answer():
+
+            logging.debug("[Chat %s %s send_sticker]" %
+                          (self.chat.chat_type, self.chat.telegram_id))
+
+            self.bot.sendSticker(chat_id=self.chat.telegram_id,
+                                 reply_to_message_id=self.message.message_id,
+                                 sticker="BQADAgADSAIAAkcGQwU-G-9SZUDTWAI")
 
     def __process_message(self):
         pair.Pair.learn(self)
