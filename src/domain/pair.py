@@ -62,29 +62,30 @@ class Pair(Model):
 
         while any(word for word in words):
             trigram = words[:3]
-            words.pop(0)
-            trigram_word_ids = list(map(
+            first_word_id, second_word_id, *third_word_id = list(map(
                 lambda x: None if x is None else src.domain.word.Word.where('word', x).first().id,
                 trigram
             ))
+            third_word_id = None if len(third_word_id) == 0 else third_word_id[0]
+
+            words.pop(0)
 
             pair = Pair.where('chat_id', message.chat.id)\
-                .where('first_id', trigram_word_ids[0])\
-                .where('second_id', trigram_word_ids[1])\
+                .where('first_id', first_word_id)\
+                .where('second_id', second_word_id)\
                 .first()
             if pair is None:
                 pair = Pair.create(chat_id=message.chat.id,
-                                   first_id=trigram_word_ids[0],
-                                   second_id=trigram_word_ids[1])
+                                   first_id=first_word_id,
+                                   second_id=second_word_id)
 
-            last_trigram_id = trigram_word_ids[2] if len(trigram_word_ids) == 3 else None
-            reply = pair.replies().where('word_id', last_trigram_id).first()
+            reply = pair.replies().where('word_id', third_word_id).first()
 
             if reply is not None:
                 reply.count += 1
                 reply.save()
             else:
-                src.domain.reply.Reply.create(pair_id=pair.id, word_id=last_trigram_id)
+                src.domain.reply.Reply.create(pair_id=pair.id, word_id=third_word_id)
 
     @staticmethod
     def __generate_sentence(message, word_ids):

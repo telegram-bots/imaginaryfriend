@@ -12,10 +12,10 @@ class Chat(Model):
     def pairs(self):
         return src.domain.pair.Pair
 
-    def migrate_to_chat_id(self, new_id):
-        logging.info("[Chat %s %s] Migrating ID to %s" % (self.chat_type, self.telegram_id, new_id))
-        self.telegram_id = new_id
-        self.save()
+    # def migrate_to_chat_id(self, new_id):
+    #     logging.info("[Chat %s %s] Migrating ID to %s" % (self.chat_type, self.telegram_id, new_id))
+    #     self.telegram_id = new_id
+    #     self.save()
 
     @staticmethod
     def get_chat(message):
