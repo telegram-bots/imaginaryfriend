@@ -85,7 +85,7 @@ class Pair(Model):
                 reply.count += 1
                 reply.save()
             else:
-                src.domain.reply.Reply.create(pair_id=pair.id, word_id=third_word_id)
+                pair.replies().create(pair_id=pair.id, word_id=third_word_id)
 
     @staticmethod
     def __generate_sentence(message, word_ids):
