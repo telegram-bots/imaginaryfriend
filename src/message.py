@@ -24,11 +24,18 @@ class Message:
     def process(self):
         if self.has_text() and not (self.is_editing() or self.is_command()):
             return self.__process_message()
+        elif self.is_sticker():
+            return self.__process_sticker()
 
     def has_text(self):
         """Returns True if the message has text.
         """
         return self.message.text != ''
+
+    def is_sticker(self):
+        """Returns True if the message is a sticker.
+        """
+        return self.message.sticker is not None
 
     def is_editing(self):
         """Returns True if the message was edited.
@@ -86,6 +93,11 @@ class Message:
         self.bot.sendMessage(chat_id=self.chat.telegram_id,
                              reply_to_message_id=self.message.message_id,
                              text=message)
+
+    def __process_sticker(self):
+        self.bot.sendSticker(chat_id=self.chat.telegram_id,
+                             reply_to_message_id=self.message.message_id,
+                             sticker="BQADAgADSAIAAkcGQwU-G-9SZUDTWAI")
 
     def __process_message(self):
         pair.Pair.learn(self)

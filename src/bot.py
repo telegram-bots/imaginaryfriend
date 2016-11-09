@@ -21,7 +21,7 @@ class Bot:
 
     def run(self):
         logging.info("Bot started")
-        message_handler = MessageHandler(Filters.text, self.message_handler)
+        message_handler = MessageHandler(Filters.text | Filters.sticker, self.message_handler)
         command_handler = CommandHandler()
 
         self.dispatcher.add_handler(message_handler)
