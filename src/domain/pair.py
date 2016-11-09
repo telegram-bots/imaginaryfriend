@@ -111,7 +111,7 @@ class Pair(Model):
                 second_words = None
 
             if len(sentences) == 0:
-                sentences.append(capitalize(pair.second.word) + " ")
+                sentences.append(capitalize(pair.second.word))
                 word_ids.remove(pair.second.id)
 
             # TODO. WARNING! Do not try to fix, it's magic, i have no clue why
