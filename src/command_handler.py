@@ -18,6 +18,7 @@ class CommandHandler(Handler):
             pass_chat_data=pass_chat_data)
         self.allow_edited = allow_edited
         self.commands = {
+            'start': self.__start_command,
             'set_chance': self.__set_chance_command,
             'get_chance': self.__get_chance_command,
             'get_stats':  self.__get_stats_command
@@ -46,6 +47,9 @@ class CommandHandler(Handler):
             method(update, args)
         except (IndexError, ValueError):
             update.message.reply_text('Invalid command!')
+
+    def __start_command(self, update, args):
+        update.message.reply_text('Hi! :3')
 
     def __set_chance_command(self, update, args):
         try:
