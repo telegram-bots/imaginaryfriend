@@ -19,7 +19,8 @@ class CommandHandler(Handler):
         self.allow_edited = allow_edited
         self.commands = {
             'set_chance': self.__set_chance_command,
-            'get_chance': self.__get_chance_command
+            'get_chance': self.__get_chance_command,
+            'get_stats':  self.__get_stats_command
         }
 
     def check_update(self, update):
@@ -63,3 +64,6 @@ class CommandHandler(Handler):
 
     def __get_chance_command(self, update, args):
         update.message.reply_text('Current chance: %d' % Chat.get_chat(update.message).random_chance)
+
+    def __get_stats_command(self, update, args):
+        update.message.reply_text('Pairs size: %d' % Chat.get_chat(update.message).pairs().count())
