@@ -31,7 +31,7 @@ class CommandHandler(Handler):
             message = update.message or update.edited_message
 
             return (message.text and message.text.startswith('/')
-                    and message.text[1:].split(' ')[0].split('@')[0] in self.commands)
+                    and self.__parse_command_name(update) in self.commands)
         else:
             return False
 
@@ -51,7 +51,9 @@ class CommandHandler(Handler):
             update.message.reply_text('Invalid command!')
 
     def __parse_command_name(self, update):
-        return update.message.text.strip('/').split(' ')[0]
+        message = update.message or update.edited_message
+
+        return message.text[1:].split(' ')[0].split('@')[0]
 
     def __start_command(self, update, args):
         update.message.reply_text('Hi! :3')
