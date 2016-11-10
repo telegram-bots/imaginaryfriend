@@ -19,6 +19,7 @@ class CommandHandler(Handler):
         self.allow_edited = allow_edited
         self.commands = {
             'start': self.__start_command,
+            'ping': self.__ping_command,
             'set_chance': self.__set_chance_command,
             'get_chance': self.__get_chance_command,
             'get_stats':  self.__get_stats_command
@@ -42,14 +43,20 @@ class CommandHandler(Handler):
 
     def handle(self, bot, update, args):
         try:
-            command = update.message.text.strip('/').split(' ')[0]
+            command = self.__parse_command_name(update)
             method = self.commands[command]
             method(update, args)
         except (IndexError, ValueError):
             update.message.reply_text('Invalid command!')
 
+    def __parse_command_name(self, update):
+        return update.message.text.strip('/').split(' ')[0]
+
     def __start_command(self, update, args):
         update.message.reply_text('Hi! :3')
+
+    def __ping_command(self, update, args):
+        update.message.reply_text('Echo')
 
     def __set_chance_command(self, update, args):
         try:
