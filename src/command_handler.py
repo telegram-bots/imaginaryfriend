@@ -19,6 +19,7 @@ class CommandHandler(Handler):
         self.allow_edited = allow_edited
         self.commands = {
             'start': self.__start_command,
+            'help': self.__help_command,
             'ping': self.__ping_command,
             'set_chance': self.__set_chance_command,
             'get_chance': self.__get_chance_command,
@@ -54,6 +55,9 @@ class CommandHandler(Handler):
 
     def __start_command(self, update, args):
         update.message.reply_text('Hi! :3')
+
+    def __help_command(self, update, args):
+        update.message.reply_text('There\'s currently nothing in there..')
 
     def __ping_command(self, update, args):
         update.message.reply_text('Echo')
