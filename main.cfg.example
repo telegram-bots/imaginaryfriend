@@ -3,6 +3,7 @@ token=
 name=
 anchors=
 messages=
+purge_interval=43200.0
 
 [grammar]
 end_sentence=.!?

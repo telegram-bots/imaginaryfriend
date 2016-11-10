@@ -58,7 +58,9 @@ class Message:
     def is_bot_added(self):
         """Returns True if the bot was added to group.
         """
-        return False
+        user_name = deep_get_attr(self.message, 'new_chat_member.username')
+
+        return user_name == self.config['bot']['name']
 
     def is_reply_to_bot(self):
         """Returns True if the message is a reply to bot.

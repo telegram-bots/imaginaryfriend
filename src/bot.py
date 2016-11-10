@@ -3,6 +3,7 @@ import logging
 from telegram.ext import Updater
 from src.command_handler import CommandHandler
 from src.message_handler import MessageHandler
+from . import chat_purge_queue_handler
 
 
 class Bot:
@@ -13,6 +14,11 @@ class Bot:
 
     def run(self):
         logging.info("Bot started")
+        chat_purge_queue_handler.init(
+            queue=self.updater.job_queue,
+            default_interval=self.config['bot']['purge_interval']
+        )
+
         message_handler = MessageHandler(self.config)
         command_handler = CommandHandler()
 

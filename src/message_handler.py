@@ -4,6 +4,7 @@ from telegram.ext import MessageHandler as ParentHandler, Filters
 
 from src.domain.message import Message
 from src.domain.pair import Pair
+from . import chat_purge_queue_handler
 
 
 class MessageHandler(ParentHandler):
@@ -17,15 +18,14 @@ class MessageHandler(ParentHandler):
             Filters.text | Filters.sticker | Filters.status_update,
             self.handle,
             pass_update_queue=pass_update_queue,
-            pass_job_queue=True,
+            pass_job_queue=False,
             pass_user_data=pass_user_data,
             pass_chat_data=pass_chat_data,
             allow_edited=allow_edited)
 
         self.config = config
 
-    def handle(self, bot, update, job_queue):
-        print(job_queue)
+    def handle(self, bot, update):
         message = Message(message=update.message, config=self.config)
 
         if message.has_text():
@@ -39,9 +39,9 @@ class MessageHandler(ParentHandler):
         elif message.is_sticker():
             return self.__process_sticker(bot, message)
         elif message.is_bot_added():
-            return self.__process_bot_add(bot, message)
+            return self.__process_bot_add(message)
         elif message.is_bot_kicked():
-            return self.__process_bot_kick(bot, message)
+            return self.__process_bot_kick(message)
 
     def __process_message(self, bot, message):
         Pair.learn(message)
@@ -62,14 +62,6 @@ class MessageHandler(ParentHandler):
                 or message.is_random_answer():
 
             self.__send_sticker(bot, message, "BQADAgADSAIAAkcGQwU-G-9SZUDTWAI")
-
-    def __process_bot_kick(self, bot, message):
-        logging.debug("[Chat %s %s bot_kicked]" %
-                      (message.chat.chat_type, message.chat.telegram_id))
-
-    def __process_bot_add(self, bot, message):
-        logging.debug("[Chat %s %s bot_added]" %
-                      (message.chat.chat_type, message.chat.telegram_id))
 
     def __answer(self, bot, message, reply):
         logging.debug("[Chat %s %s answer] %s" %
@@ -96,3 +88,15 @@ class MessageHandler(ParentHandler):
         bot.sendSticker(chat_id=message.chat.telegram_id,
                         reply_to_message_id=message.message.message_id,
                         sticker=sticker_id)
+
+    def __process_bot_kick(self, message):
+        logging.debug("[Chat %s %s bot_kicked]" %
+                      (message.chat.chat_type, message.chat.telegram_id))
+
+        chat_purge_queue_handler.add(message.chat.id)
+
+    def __process_bot_add(self, message):
+        logging.debug("[Chat %s %s bot_added]" %
+                      (message.chat.chat_type, message.chat.telegram_id))
+
+        chat_purge_queue_handler.remove(message.chat.id)
