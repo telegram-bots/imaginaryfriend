@@ -8,7 +8,7 @@ ImaginaryFriend can:
 
 * reply to random messages in chat groups,
 * reply to replies to its messages / messages mentioning it,
-* send (one!) stiker ("I'm frustrated by all these stickers"),
+* send (one!) sticker ("I'm frustrated by all these stickers"),
 * do some commands.
 
 ### Commands
