@@ -39,6 +39,7 @@ class CommandHandler(Handler):
 
         return self.callback(dispatcher.bot, update, **optional_args)
 
+
     def handle(self, bot, update, args):
         try:
             command = self.__parse_command_name(update)
@@ -63,13 +64,13 @@ class CommandHandler(Handler):
                                      /ping,
                                      /get_stats: get information on how many pairs are known by ImaginaryFriend,
                                      /set_chance: set the probability that ImaginaryFriend would reply to a random message (must be in range 1-50, default: 5),
-                                     /get_chance: get current probability that ImaginaryFriend would reply to a message.')"""
+                                     /get_chance: get current probability that ImaginaryFriend would reply to a message.')""")
 
-                                  
+
     def __ping_command(self, update, args):
         update.message.reply_text('pong')
 
-                                  
+
     def __set_chance_command(self, update, args):
         try:
             random_chance = int(args[0])

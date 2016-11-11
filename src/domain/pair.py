@@ -16,7 +16,7 @@ class Pair(Model):
 
     # TODO Move to config
     end_sentence = '.....!!?'
-    all = '.!?,;:()"\'
+    all = '.!?,;:()\"'
 
     @has_many
     def replies(self):
