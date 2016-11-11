@@ -46,7 +46,7 @@ class CommandHandler(Handler):
             method = self.commands[command]
             method(update, args)
         except (IndexError, ValueError):
-            update.message.reply_text('Invalid command!')
+            update.message.reply_text('Invalid command! Type /help')
 
             
     def __parse_command_name(self, update):
@@ -61,11 +61,18 @@ class CommandHandler(Handler):
         
     def __help_command(self, update, args):
         update.message.reply_text(
-            """Available commands:
-            • /ping,
-            • /get_stats: get information on how many pairs are known by ImaginaryFriend,
-            • /set_chance: set the probability that ImaginaryFriend would reply to a random message (must be in range 1-50, default: 5),
-            • /get_chance: get current probability that ImaginaryFriend would reply to a message."""
+            """Add me to your group and let me listen to your chat for a while. 
+            When I learn enough word pairs, I'll start bringing fun and absurdity to your conversations.
+
+Available commands:
+• /ping,
+• /get_stats: get the number of word pairs I've learned in this chat,
+• /set_chance: set the chance that I'll reply to a random message (must be in range 1-50, default: 5),
+• /get_chance: get the current chance of my random reply.
+
+If you get tired of me, you can kick me from the group.
+In 12 hours, I'll forget everything that have been learned in your chat, so you can add me again and teach me new things!
+"""
         )
 
 
@@ -86,7 +93,7 @@ class CommandHandler(Handler):
 
             update.message.reply_text('Set chance to: {}'.format(random_chance))
         except (IndexError, ValueError):
-            update.message.reply_text('Usage: /set_chance 1-50')
+            update.message.reply_text('Usage: /set_chance 1-50.')
 
                                   
     def __get_chance_command(self, update, args):
