@@ -4,37 +4,34 @@ from src.domain.chat import Chat
 
 
 class CommandHandler(Handler):
-    def __init__(self,
-                 allow_edited=False,
-                 pass_update_queue=False,
-                 pass_job_queue=False,
-                 pass_user_data=False,
-                 pass_chat_data=False):
-        super(CommandHandler, self).__init__(
-            self.handle,
-            pass_update_queue=pass_update_queue,
-            pass_job_queue=pass_job_queue,
-            pass_user_data=pass_user_data,
-            pass_chat_data=pass_chat_data)
+    def __init__(self, allow_edited = False, pass_update_queue = False, pass_job_queue=False, 
+                       pass_user_data = False, pass_chat_data = False):      
+        super(CommandHandler, self).__init__(self.handle, 
+                                             pass_update_queue = pass_update_queue,
+                                             pass_job_queue    = pass_job_queue, 
+                                             pass_user_data    = pass_user_data,
+                                             pass_chat_data    = pass_chat_data)
+        
         self.allow_edited = allow_edited
         self.commands = {
-            'start': self.__start_command,
-            'help': self.__help_command,
-            'ping': self.__ping_command,
+            'start':      self.__start_command,
+            'help':       self.__help_command,
+            'ping':       self.__ping_command,
             'set_chance': self.__set_chance_command,
             'get_chance': self.__get_chance_command,
             'get_stats':  self.__get_stats_command
         }
 
+    
     def check_update(self, update):
         if isinstance(update, Update) and (update.message or update.edited_message and self.allow_edited):
             message = update.message or update.edited_message
 
-            return (message.text and message.text.startswith('/')
-                    and self.__parse_command_name(update) in self.commands)
+            return (message.text and message.text.startswith('/') and self.__parse_command_name(update) in self.commands)
         else:
             return False
 
+        
     def handle_update(self, update, dispatcher):
         optional_args = self.collect_optional_args(dispatcher, update)
         message = update.message or update.edited_message
@@ -50,14 +47,17 @@ class CommandHandler(Handler):
         except (IndexError, ValueError):
             update.message.reply_text('Invalid command!')
 
+            
     def __parse_command_name(self, update):
         message = update.message or update.edited_message
 
         return message.text[1:].split(' ')[0].split('@')[0]
 
+    
     def __start_command(self, update, args):
         update.message.reply_text('Hi! :3')
 
+        
     def __help_command(self, update, args):
         update.message.reply_text("""Available commands:
                                      /ping,
@@ -65,9 +65,11 @@ class CommandHandler(Handler):
                                      /set_chance: set the probability that ImaginaryFriend would reply to a random message (must be in range 1-50, default: 5),
                                      /get_chance: get current probability that ImaginaryFriend would reply to a message.')"""
 
+                                  
     def __ping_command(self, update, args):
-        update.message.reply_text('Echo')
+        update.message.reply_text('pong')
 
+                                  
     def __set_chance_command(self, update, args):
         try:
             random_chance = int(args[0])
@@ -79,12 +81,14 @@ class CommandHandler(Handler):
             chat.random_chance = random_chance
             chat.save()
 
-            update.message.reply_text('Set chance to %d' % random_chance)
+            update.message.reply_text('Set chance to: {}'.format(random_chance))
         except (IndexError, ValueError):
             update.message.reply_text('Usage: /set_chance 1-50')
 
+                                  
     def __get_chance_command(self, update, args):
-        update.message.reply_text('Current chance: %d' % Chat.get_chat(update.message).random_chance)
+        update.message.reply_text('Current chance: {}'.format(Chat.get_chat(update.message).random_chance))
 
+                                  
     def __get_stats_command(self, update, args):
-        update.message.reply_text('Pairs size: %d' % Chat.get_chat(update.message).pairs().count())
+        update.message.reply_text('Pairs: {}'.format(Chat.get_chat(update.message).pairs().count()))
