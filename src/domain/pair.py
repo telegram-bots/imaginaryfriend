@@ -15,8 +15,8 @@ class Pair(Model):
     __guarded__ = ['id']
 
     # TODO Move to config
-    end_sentence = '.!?'
-    all = '.!?,;:'
+    end_sentence = '.....!!?'
+    all = '.!?,;:()"\'
 
     @has_many
     def replies(self):
