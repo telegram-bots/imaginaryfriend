@@ -7,7 +7,7 @@ import src.entity.reply
 import src.entity.chat
 import src.entity.word
 from src.utils import *
-from src import config
+from src.config import config
 
 
 class Pair(Model):
@@ -124,7 +124,7 @@ class Pair(Model):
 
         sentence = ' '.join(sentences).strip()
         if sentence[-1:] not in config['grammar']['end_sentence']:
-            sentence += random.choice(list(config['grammar']['end_sentence']))
+            sentence += random_element(list(config['grammar']['end_sentence']))
 
         return sentence
 

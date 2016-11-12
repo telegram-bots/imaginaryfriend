@@ -4,13 +4,13 @@ from datetime import datetime, timedelta
 from telegram.ext import Job
 from src.entity.chat import Chat
 from src.entity.job import Job as JobEntity
-from src import config
+from src.config import config
 
 
 class ChatPurgeQueue:
     queue = None
     jobs = {}
-    default_interval = float(config['bot']['default_interval'])
+    default_interval = float(config['bot']['purge_interval'])
     job_type = 'purge'
 
     # TODO. Должно взять все задачи из таблицы и проинициализировать их

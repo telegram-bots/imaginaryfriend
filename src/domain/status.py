@@ -1,5 +1,5 @@
 from src.utils import deep_get_attr
-from src import config
+from src.config import config
 
 
 class Status:

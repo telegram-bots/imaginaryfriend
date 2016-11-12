@@ -4,8 +4,8 @@ from telegram.ext import Updater
 from src.handlers.message_handler import MessageHandler
 from src.handlers.command_handler import CommandHandler
 from src.handlers.status_handler import StatusHandler
-from src import ChatPurgeQueue
-from . import config
+from src.chat_purge_queue import ChatPurgeQueue
+from src.config import config
 
 
 class Bot:

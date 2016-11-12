@@ -3,7 +3,7 @@ import logging.config
 from src.bot import Bot
 from orator.orm import Model
 from orator import DatabaseManager
-from src import config
+from src.config import config
 
 
 def main():
