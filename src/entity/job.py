@@ -7,6 +7,7 @@ import src.entity.chat
 class Job(Model):
     __fillable__ = ['chat_id', 'type', 'repeat', 'execute_at']
     __timestamps__ = False
+    __dates__ = ['execute_at']
 
     @belongs_to
     def chat(self):

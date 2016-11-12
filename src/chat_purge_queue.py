@@ -25,9 +25,9 @@ class ChatPurgeQueue:
             else:
                 interval = (job.execute_at - current_datetime).total_seconds()
 
-            self.add(chat_id=job.chat_id, interval=interval)
+            self.add(chat_id=job.chat_id, interval=interval, write_to_db=False)
 
-    def add(self, chat_id, interval=default_interval):
+    def add(self, chat_id, interval=default_interval, write_to_db=True):
         scheduled_at = datetime.now() + timedelta(seconds=interval)
 
         logging.info("Added chat #%d to purge queue, scheduled to run at %s" %
@@ -37,10 +37,11 @@ class ChatPurgeQueue:
         self.jobs[chat_id] = job
         self.queue.put(job)
 
-        JobEntity.create(chat_id=chat_id,
-                         type=self.job_type,
-                         repeat=False,
-                         execute_at=scheduled_at)
+        if write_to_db:
+            JobEntity.create(chat_id=chat_id,
+                             type=self.job_type,
+                             repeat=False,
+                             execute_at=scheduled_at)
 
     def remove(self, chat_id):
         if chat_id not in self.jobs:
