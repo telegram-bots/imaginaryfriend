@@ -6,9 +6,8 @@ from src.domain.command import Command
 
 
 class CommandHandler(Handler):
-    def __init__(self, config):
+    def __init__(self):
         super(CommandHandler, self).__init__(self.handle)
-        self.config = config
         self.commands = {
             'start':      self.__start_command,
             'help':       self.__help_command,
@@ -34,7 +33,7 @@ class CommandHandler(Handler):
     def handle(self, bot, update):
         try:
             chat = Chat.get_chat(update.message)
-            command = Command(chat=chat, message=update.message, config=self.config)
+            command = Command(chat=chat, message=update.message)
 
             callback = self.commands[command.name]
             callback(update, command)

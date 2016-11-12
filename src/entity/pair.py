@@ -7,14 +7,11 @@ import src.entity.reply
 import src.entity.chat
 import src.entity.word
 from src.utils import *
+from src import config
 
 
 class Pair(Model):
     __guarded__ = ['id']
-
-    # TODO Move to config
-    end_sentence = '.....!!?'
-    all = '.!?,;:()\"'
 
     @has_many
     def replies(self):
@@ -53,7 +50,7 @@ class Pair(Model):
         words = [None]
         for word in message.words:
             words.append(word)
-            if word[-1] in Pair.end_sentence:
+            if word[-1] in config['grammar']['end_sentence']:
                 words.append(None)
         if words[-1] is not None:
             words.append(None)
@@ -125,8 +122,8 @@ class Pair(Model):
                 break
 
         sentence = ' '.join(sentences).strip()
-        if sentence[-1:] not in Pair.end_sentence:
-            sentence += random.choice(list(Pair.end_sentence))
+        if sentence[-1:] not in config['grammar']['end_sentence']:
+            sentence += random.choice(list(config['grammar']['end_sentence']))
 
         return sentence
 

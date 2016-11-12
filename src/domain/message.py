@@ -1,12 +1,12 @@
 import random
 from src.utils import deep_get_attr
+from src import config
 
 
 class Message:
-    def __init__(self, chat, message, config):
+    def __init__(self, chat, message):
         self.chat    = chat
         self.message = message
-        self.config  = config
 
         if self.has_text():
             self.text = message.text
@@ -37,7 +37,7 @@ class Message:
     def has_anchors(self):
         """Returns True if the message contains at least one anchor from anchors config.
         """
-        anchors = self.config['bot']['anchors'].split(',')
+        anchors = config['bot']['anchors'].split(',')
         return self.has_text() and \
                (any(x in self.message.text.split(' ') for x in anchors))
 
@@ -51,12 +51,12 @@ class Message:
         """
         user_name = deep_get_attr(self.message, 'reply_to_message.from_user.username')
 
-        return user_name == self.config['bot']['name']
+        return user_name == config['bot']['name']
 
     def is_random_answer(self):
         """Returns True if reply chance for this chat is high enough
         """
-        return random.randint(0, 100) < getattr(self.chat, 'random_chance', self.config['bot']['default_chance'])
+        return random.randint(0, 100) < getattr(self.chat, 'random_chance', config['bot']['default_chance'])
 
     def __get_words(self):
         text = list(self.text)

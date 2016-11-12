@@ -8,16 +8,14 @@ from src.entity.chat import Chat
 
 
 class MessageHandler(ParentHandler):
-    def __init__(self, config):
+    def __init__(self):
         super(MessageHandler, self).__init__(
             Filters.text | Filters.sticker,
             self.handle)
 
-        self.config = config
-
     def handle(self, bot, update):
         chat = Chat.get_chat(update.message)
-        message = Message(chat=chat, message=update.message, config=self.config)
+        message = Message(chat=chat, message=update.message)
 
         if message.has_text():
             logging.debug("[Chat %s %s bare_text] %s" %

@@ -1,23 +1,20 @@
 import logging
 
 from telegram.ext import Job
-
 from src.entity.chat import Chat
+from src import config
 
 
 class ChatPurgeQueue:
     queue = None
-    default_interval = 99999.0
     jobs = {}
+    default_interval = float(config['bot']['default_interval'])
 
     # TODO. Должно взять все задачи из таблицы и проинициализировать их
-    def init(self, queue, default_interval):
+    def __init__(self, queue):
         self.queue = queue
-        self.default_interval = float(default_interval)
 
-    def add(self, chat_id, interval=None):
-        if interval is None:
-            interval = self.default_interval
+    def add(self, chat_id, interval=default_interval):
         if self.queue is None:
             logging.error("Queue is not set!")
             return
@@ -41,10 +38,7 @@ class ChatPurgeQueue:
         job = self.jobs.pop(chat_id)
         job.schedule_removal()
 
-    def __make_purge_job(self, chat_id, interval=None):
-        if interval is None:
-            interval = self.default_interval
-
+    def __make_purge_job(self, chat_id, interval=default_interval):
         return Job(self.__purge_callback, interval, repeat=False, context=chat_id)
 
     def __purge_callback(self, bot, job):

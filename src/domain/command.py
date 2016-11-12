@@ -1,8 +1,7 @@
 class Command:
-    def __init__(self, chat, message, config):
+    def __init__(self, chat, message):
         self.chat    = chat
         self.message = message
-        self.config  = config
         self.name    = Command.parse_name(message)
         self.args    = Command.parse_args(message)
 
