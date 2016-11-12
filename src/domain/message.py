@@ -38,7 +38,7 @@ class Message:
         """Returns True if the message contains at least one anchor from anchors config.
         """
         anchors = config['bot']['anchors'].split(',')
-        return self.has_text() and any(a in self.words for a in anchors)
+        return self.has_text() and any(a in self.message.text.split(' ') for a in anchors)
 
     def is_private(self):
         """Returns True if the message is private.
