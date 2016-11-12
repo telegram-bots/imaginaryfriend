@@ -17,7 +17,7 @@ class Message:
     def has_text(self):
         """Returns True if the message has text.
         """
-        return self.message.text != ''
+        return self.message.text.strip() != ''
 
     def is_sticker(self):
         """Returns True if the message is a sticker.
@@ -38,8 +38,7 @@ class Message:
         """Returns True if the message contains at least one anchor from anchors config.
         """
         anchors = config['bot']['anchors'].split(',')
-        return self.has_text() and \
-               (any(x in self.message.text.split(' ') for x in anchors))
+        return self.has_text() and any(a in self.words for a in anchors)
 
     def is_private(self):
         """Returns True if the message is private.
@@ -61,7 +60,13 @@ class Message:
     def __get_words(self):
         text = list(self.text)
 
+        def prettify(word):
+            lowercase_word = word.lower().strip()
+            pretty_word = lowercase_word.strip(config['grammar']['all'])
+
+            return pretty_word if pretty_word != '' and len(pretty_word) > 2 else lowercase_word
+
         for entity in self.message.entities:
             text[entity.offset:entity.length] = ' ' * entity.length
 
-        return list(filter(None, map(lambda x: x.lower(), ''.join(text).split(' '))))
+        return list(filter(None, map(prettify, ''.join(text).split(' '))))
