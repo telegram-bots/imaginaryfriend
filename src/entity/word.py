@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from orator.orm import Model
 from orator.orm import has_many
 
@@ -13,12 +11,3 @@ class Word(Model):
     @has_many
     def chats(self):
         return src.entity.chat.Chat
-
-    @staticmethod
-    def learn(words):
-        existing_words = Word.where_in('word', words).get().pluck('word').all()
-        # TODO. Слова должны быть уникальные И ТАКЖЕ ОБЯЗАТЕЛЬНО в оригинальном порядке
-        new_words = [word for word in OrderedDict.fromkeys(words).keys() if word not in existing_words]
-
-        for word in new_words:
-            Word.create(word=word)

@@ -3,15 +3,17 @@ import logging
 from telegram.ext import MessageHandler as ParentHandler, Filters
 
 from src.domain.message import Message
-from src.entity.pair import Pair
 from src.entity.chat import Chat
 
 
 class MessageHandler(ParentHandler):
-    def __init__(self):
+    def __init__(self, data_learner, reply_generator):
         super(MessageHandler, self).__init__(
             Filters.text | Filters.sticker,
             self.handle)
+
+        self.data_learner = data_learner
+        self.reply_generator = reply_generator
 
     def handle(self, bot, update):
         chat = Chat.get_chat(update.message)
@@ -29,14 +31,13 @@ class MessageHandler(ParentHandler):
             return self.__process_sticker(bot, message)
 
     def __process_message(self, bot, message):
-        Pair.learn(message)
+        self.data_learner.learn(message)
 
         if message.has_anchors() \
                 or message.is_private() \
                 or message.is_reply_to_bot() \
                 or message.is_random_answer():
-
-            reply = Pair.generate(message)
+            reply = self.reply_generator.generate(message)
             if reply != '':
                 self.__answer(bot, message, reply)
 
@@ -55,16 +56,6 @@ class MessageHandler(ParentHandler):
                        reply))
 
         bot.sendMessage(chat_id=message.chat.telegram_id, text=reply)
-
-    def __reply(self, bot, message, reply):
-        logging.debug("[Chat %s %s reply] %s" %
-                      (message.chat.chat_type,
-                       message.chat.telegram_id,
-                       reply))
-
-        bot.sendMessage(chat_id=message.chat.telegram_id,
-                        reply_to_message_id=message.message.message_id,
-                        text=reply)
 
     def __send_sticker(self, bot, message, sticker_id):
         logging.debug("[Chat %s %s send_sticker]" %
