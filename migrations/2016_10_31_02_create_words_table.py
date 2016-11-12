@@ -2,7 +2,6 @@ from orator.migrations import Migration
 
 
 class CreateWordsTable(Migration):
-
     def up(self):
         """
         Run the migrations.

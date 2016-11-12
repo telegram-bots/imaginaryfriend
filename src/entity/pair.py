@@ -12,6 +12,7 @@ from src import config
 
 class Pair(Model):
     __guarded__ = ['id']
+    __timestamps__ = ['created_at']
 
     @has_many
     def replies(self):

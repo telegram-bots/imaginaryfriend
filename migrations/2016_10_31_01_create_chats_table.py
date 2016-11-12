@@ -2,7 +2,6 @@ from orator.migrations import Migration
 
 
 class CreateChatsTable(Migration):
-
     def up(self):
         """
         Run the migrations.

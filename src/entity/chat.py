@@ -7,7 +7,7 @@ import src.entity.pair
 
 
 class Chat(Model):
-    __guarded__ = ['id']
+    __fillable__ = ['telegram_id', 'chat_type', 'random_chance']
 
     @has_many
     def pairs(self):

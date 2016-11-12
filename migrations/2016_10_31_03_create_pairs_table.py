@@ -2,7 +2,6 @@ from orator.migrations import Migration
 
 
 class CreatePairsTable(Migration):
-
     def up(self):
         """
         Run the migrations.
@@ -16,7 +15,7 @@ class CreatePairsTable(Migration):
             #     ['chat_id', 'first_id', 'second_id'],
             #     name='unique_pairs_idx'
             # )
-            table.timestamps()
+            table.timestamp('created_at').default('CURRENT_TIMESTAMP')
 
     def down(self):
         """

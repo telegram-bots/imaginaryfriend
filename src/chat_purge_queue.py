@@ -1,7 +1,9 @@
 import logging
 
+from datetime import datetime, timedelta
 from telegram.ext import Job
 from src.entity.chat import Chat
+from src.entity.job import Job as JobEntity
 from src import config
 
 
@@ -9,27 +11,38 @@ class ChatPurgeQueue:
     queue = None
     jobs = {}
     default_interval = float(config['bot']['default_interval'])
+    job_type = 'purge'
 
     # TODO. Должно взять все задачи из таблицы и проинициализировать их
     def __init__(self, queue):
         self.queue = queue
+        existing_jobs = JobEntity.where('type', self.job_type).get().all()
+
+        for job in existing_jobs:
+            current_datetime = datetime.now()
+            if current_datetime >= job.execute_at:
+                interval = 60
+            else:
+                interval = (job.execute_at - current_datetime).total_seconds()
+
+            self.add(chat_id=job.chat_id, interval=interval)
 
     def add(self, chat_id, interval=default_interval):
-        if self.queue is None:
-            logging.error("Queue is not set!")
-            return
+        scheduled_at = datetime.now() + timedelta(seconds=interval)
 
-        logging.info("Added chat #%d to purge queue, with interval %d" %
-                     (chat_id, interval))
+        logging.info("Added chat #%d to purge queue, scheduled to run at %s" %
+                     (chat_id, scheduled_at))
 
         job = self.__make_purge_job(chat_id, interval)
         self.jobs[chat_id] = job
         self.queue.put(job)
 
+        JobEntity.create(chat_id=chat_id,
+                         type=self.job_type,
+                         repeat=False,
+                         execute_at=scheduled_at)
+
     def remove(self, chat_id):
-        if self.queue is None:
-            logging.error("Queue is not set!")
-            return
         if chat_id not in self.jobs:
             return
 
@@ -37,6 +50,7 @@ class ChatPurgeQueue:
 
         job = self.jobs.pop(chat_id)
         job.schedule_removal()
+        JobEntity.where('chat_id', chat_id).where('type', self.job_type).delete()
 
     def __make_purge_job(self, chat_id, interval=default_interval):
         return Job(self.__purge_callback, interval, repeat=False, context=chat_id)
@@ -49,3 +63,5 @@ class ChatPurgeQueue:
         if chat is not None:
             chat.pairs().delete()
             chat.delete()
+
+        JobEntity.where('chat_id', chat_id).where('type', self.job_type).delete()
