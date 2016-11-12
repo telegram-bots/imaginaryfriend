@@ -1,14 +1,12 @@
 from datetime import datetime, timedelta
-
 from orator.orm import Model
 from orator.orm import belongs_to
 from orator.orm import has_many
 
+import src.entity.reply
+import src.entity.chat
+import src.entity.word
 from src.utils import *
-
-import src.domain.chat
-import src.domain.reply
-import src.domain.word
 
 
 class Pair(Model):
@@ -20,19 +18,19 @@ class Pair(Model):
 
     @has_many
     def replies(self):
-        return src.domain.reply.Reply
+        return src.entity.reply.Reply
 
     @belongs_to
     def chat(self):
-        return src.domain.chat.Chat
+        return src.entity.chat.Chat
 
     @belongs_to
     def first(self):
-        return src.domain.word.Word
+        return src.entity.word.Word
 
     @belongs_to
     def second(self):
-        return src.domain.word.Word
+        return src.entity.word.Word
 
     @staticmethod
     def generate(message):
@@ -40,7 +38,7 @@ class Pair(Model):
 
     @staticmethod
     def generate_story(message, words, sentences):
-        words_ids = src.domain.word.Word.where_in('word', words).get().pluck('id').all()
+        words_ids = src.entity.word.Word.where_in('word', words).get().pluck('id').all()
 
         result = []
         for _ in range(0, sentences):
@@ -50,7 +48,7 @@ class Pair(Model):
 
     @staticmethod
     def learn(message):
-        src.domain.word.Word.learn(message.words)
+        src.entity.word.Word.learn(message.words)
 
         words = [None]
         for word in message.words:
@@ -63,7 +61,7 @@ class Pair(Model):
         while any(word for word in words):
             trigram = words[:3]
             first_word_id, second_word_id, *third_word_id = list(map(
-                lambda x: None if x is None else src.domain.word.Word.where('word', x).first().id,
+                lambda x: None if x is None else src.entity.word.Word.where('word', x).first().id,
                 trigram
             ))
             third_word_id = None if len(third_word_id) == 0 else third_word_id[0]

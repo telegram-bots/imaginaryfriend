@@ -1,8 +1,9 @@
+from collections import OrderedDict
+
 from orator.orm import Model
 from orator.orm import has_many
 
-import src.domain.chat
-from collections import OrderedDict
+import src.entity.chat
 
 
 class Word(Model):
@@ -11,7 +12,7 @@ class Word(Model):
 
     @has_many
     def chats(self):
-        return src.domain.chat.Chat
+        return src.entity.chat.Chat
 
     @staticmethod
     def learn(words):

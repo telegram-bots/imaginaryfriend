@@ -3,30 +3,21 @@ import logging
 from telegram.ext import MessageHandler as ParentHandler, Filters
 
 from src.domain.message import Message
-from src.domain.pair import Pair
-from . import chat_purge_queue_handler
+from src.entity.pair import Pair
+from src.entity.chat import Chat
 
 
 class MessageHandler(ParentHandler):
-    def __init__(self,
-                 config,
-                 allow_edited=False,
-                 pass_update_queue=False,
-                 pass_user_data=False,
-                 pass_chat_data=False):
+    def __init__(self, config):
         super(MessageHandler, self).__init__(
-            Filters.text | Filters.sticker | Filters.status_update,
-            self.handle,
-            pass_update_queue=pass_update_queue,
-            pass_job_queue=False,
-            pass_user_data=pass_user_data,
-            pass_chat_data=pass_chat_data,
-            allow_edited=allow_edited)
+            Filters.text | Filters.sticker,
+            self.handle)
 
         self.config = config
 
     def handle(self, bot, update):
-        message = Message(message=update.message, config=self.config)
+        chat = Chat.get_chat(update.message)
+        message = Message(chat=chat, message=update.message, config=self.config)
 
         if message.has_text():
             logging.debug("[Chat %s %s bare_text] %s" %
@@ -34,14 +25,10 @@ class MessageHandler(ParentHandler):
                            message.chat.telegram_id,
                            message.text))
 
-        if message.has_text() and not (message.is_editing() or message.is_command()):
+        if message.has_text() and not message.is_editing():
             return self.__process_message(bot, message)
         elif message.is_sticker():
             return self.__process_sticker(bot, message)
-        elif message.is_bot_added():
-            return self.__process_bot_add(message)
-        elif message.is_bot_kicked():
-            return self.__process_bot_kick(message)
 
     def __process_message(self, bot, message):
         Pair.learn(message)
@@ -88,15 +75,3 @@ class MessageHandler(ParentHandler):
         bot.sendSticker(chat_id=message.chat.telegram_id,
                         reply_to_message_id=message.message.message_id,
                         sticker=sticker_id)
-
-    def __process_bot_kick(self, message):
-        logging.debug("[Chat %s %s bot_kicked]" %
-                      (message.chat.chat_type, message.chat.telegram_id))
-
-        chat_purge_queue_handler.add(message.chat.id)
-
-    def __process_bot_add(self, message):
-        logging.debug("[Chat %s %s bot_added]" %
-                      (message.chat.chat_type, message.chat.telegram_id))
-
-        chat_purge_queue_handler.remove(message.chat.id)

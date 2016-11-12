@@ -1,8 +1,9 @@
-from orator.orm import Model
-from orator.orm import has_many
 import logging
 
-import src.domain.pair
+from orator.orm import Model
+from orator.orm import has_many
+
+import src.entity.pair
 
 
 class Chat(Model):
@@ -10,7 +11,7 @@ class Chat(Model):
 
     @has_many
     def pairs(self):
-        return src.domain.pair.Pair
+        return src.entity.pair.Pair
 
     # def migrate_to_chat_id(self, new_id):
     #     logging.info("[Chat %s %s] Migrating ID to %s" % (self.chat_type, self.telegram_id, new_id))
@@ -19,10 +20,7 @@ class Chat(Model):
 
     @staticmethod
     def get_chat(message):
-        telegram_id = message.chat.id
-        type = message.chat.type
-
-        return Chat.first_or_create(telegram_id=telegram_id, chat_type=type)
+        return Chat.first_or_create(telegram_id=message.chat.id, chat_type=message.chat.type)
 
 # Events
 Chat.created(lambda chat: logging.info("[Chat %s %s] Created with internal ID #%s" %

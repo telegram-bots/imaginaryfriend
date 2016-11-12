@@ -1,9 +1,10 @@
 import logging
 
 from telegram.ext import Updater
-from src.command_handler import CommandHandler
-from src.message_handler import MessageHandler
-from . import chat_purge_queue_handler
+from src.handlers.message_handler import MessageHandler
+from src.handlers.command_handler import CommandHandler
+from src.handlers.status_handler import StatusHandler
+from . import chat_purge_queue
 
 
 class Bot:
@@ -14,15 +15,15 @@ class Bot:
 
     def run(self):
         logging.info("Bot started")
-        chat_purge_queue_handler.init(
+
+        chat_purge_queue.init(
             queue=self.updater.job_queue,
             default_interval=self.config['bot']['purge_interval']
         )
 
-        message_handler = MessageHandler(self.config)
-        command_handler = CommandHandler()
+        self.dispatcher.add_handler(MessageHandler(self.config))
+        self.dispatcher.add_handler(CommandHandler(self.config))
+        self.dispatcher.add_handler(StatusHandler(self.config))
 
-        self.dispatcher.add_handler(message_handler)
-        self.dispatcher.add_handler(command_handler)
         self.updater.start_polling()
         self.updater.idle()

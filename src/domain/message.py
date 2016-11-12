@@ -1,14 +1,12 @@
 import random
-
-import src.domain.chat as chat
 from src.utils import deep_get_attr
 
 
 class Message:
-    def __init__(self, message, config):
+    def __init__(self, chat, message, config):
+        self.chat    = chat
         self.message = message
         self.config  = config
-        self.chat    = chat.Chat.get_chat(message)
 
         if self.has_text():
             self.text = message.text
@@ -48,20 +46,6 @@ class Message:
         """
         return self.message.chat.type == 'private'
 
-    def is_bot_kicked(self):
-        """Returns True if the bot was kicked from group.
-        """
-        user_name = deep_get_attr(self.message, 'left_chat_member.username')
-
-        return user_name == self.config['bot']['name']
-
-    def is_bot_added(self):
-        """Returns True if the bot was added to group.
-        """
-        user_name = deep_get_attr(self.message, 'new_chat_member.username')
-
-        return user_name == self.config['bot']['name']
-
     def is_reply_to_bot(self):
         """Returns True if the message is a reply to bot.
         """
@@ -72,12 +56,7 @@ class Message:
     def is_random_answer(self):
         """Returns True if reply chance for this chat is high enough
         """
-        return random.randint(0, 100) < getattr(self.chat, 'random_chance', 5)
-
-    def is_command(self):
-        """Returns True if the message is a command (`/start`, `/do_stuff`).
-        """
-        return self.has_text() and self.text[0] == '/'
+        return random.randint(0, 100) < getattr(self.chat, 'random_chance', self.config['bot']['default_chance'])
 
     def __get_words(self):
         text = list(self.text)

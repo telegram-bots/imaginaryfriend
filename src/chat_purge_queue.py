@@ -1,9 +1,11 @@
 import logging
+
 from telegram.ext import Job
-from src.domain.chat import Chat
+
+from src.entity.chat import Chat
 
 
-class ChatPurgeQueueHandler:
+class ChatPurgeQueue:
     queue = None
     default_interval = 99999.0
     jobs = {}
@@ -49,7 +51,7 @@ class ChatPurgeQueueHandler:
         chat_id = job.context
         logging.info("Removing chat #%d data..." % chat_id)
 
-        chat = Chat.find(job.context)
+        chat = Chat.find(chat_id)
         if chat is not None:
             chat.pairs().delete()
             chat.delete()

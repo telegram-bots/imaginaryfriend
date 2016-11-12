@@ -1,3 +1,3 @@
-from src.chat_purge_queue_handler import ChatPurgeQueueHandler
+from src.chat_purge_queue import ChatPurgeQueue
 
-chat_purge_queue_handler = ChatPurgeQueueHandler()
+chat_purge_queue = ChatPurgeQueue()
