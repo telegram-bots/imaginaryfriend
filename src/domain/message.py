@@ -1,12 +1,12 @@
 import random
+from .abstract_entity import AbstractEntity
 from src.utils import deep_get_attr
 from src.config import config
 
 
-class Message:
+class Message(AbstractEntity):
     def __init__(self, chat, message):
-        self.chat    = chat
-        self.message = message
+        super(Message).__init__(chat=chat, message=message)
 
         if self.has_text():
             self.text = message.text

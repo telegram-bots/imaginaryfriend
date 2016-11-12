@@ -6,7 +6,7 @@ from src.domain.command import Command
 
 
 class CommandHandler(Handler):
-    def __init__(self):
+    def __init__(self, message_sender):
         super(CommandHandler, self).__init__(self.handle)
         self.commands = {
             'start':      self.__start_command,
@@ -16,6 +16,7 @@ class CommandHandler(Handler):
             'get_chance': self.__get_chance_command,
             'get_stats':  self.__get_stats_command
         }
+        self.message_sender = message_sender
     
     def check_update(self, update):
         if isinstance(update, Update) and update.message:
@@ -31,20 +32,20 @@ class CommandHandler(Handler):
         return self.callback(dispatcher.bot, update, **optional_args)
 
     def handle(self, bot, update):
-        try:
-            chat = Chat.get_chat(update.message)
-            command = Command(chat=chat, message=update.message)
+        chat = Chat.get_chat(update.message)
+        command = Command(chat=chat, message=update.message)
 
-            callback = self.commands[command.name]
-            callback(update, command)
+        try:
+            self.commands[command.name](command)
         except (IndexError, ValueError):
-            update.message.reply_text('Invalid command! Type /help')
+            self.message_sender.reply(command, 'Invalid command! Type /help')
     
-    def __start_command(self, update, command):
-        update.message.reply_text('Hi! :3')
+    def __start_command(self, command):
+        self.message_sender.reply(command, 'Hi! :3')
         
-    def __help_command(self, update, command):
-        update.message.reply_text(
+    def __help_command(self, command):
+        self.message_sender.reply(
+            command,
             """Add me to your group and let me listen to your chat for a while. 
 When I learn enough word pairs, I'll start bringing fun and absurdity to your conversations.
 
@@ -59,10 +60,10 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
 """
         )
 
-    def __ping_command(self, update, command):
-        update.message.reply_text('pong')
+    def __ping_command(self, command):
+        self.message_sender.reply(command, 'pong')
 
-    def __set_chance_command(self, update, command):
+    def __set_chance_command(self, command):
         try:
             random_chance = int(command.args[0])
 
@@ -71,12 +72,12 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
 
             command.chat.update(random_chance=random_chance)
 
-            update.message.reply_text('Set chance to: {}'.format(random_chance))
+            self.message_sender.reply(command, 'Set chance to: {}'.format(random_chance))
         except (IndexError, ValueError):
-            update.message.reply_text('Usage: /set_chance 1-50.')
+            self.message_sender.reply(command, 'Usage: /set_chance 1-50.')
                                   
-    def __get_chance_command(self, update, command):
-        update.message.reply_text('Current chance: {}'.format(command.chat.random_chance))
+    def __get_chance_command(self, command):
+        self.message_sender.reply(command, 'Current chance: {}'.format(command.chat.random_chance))
                                   
-    def __get_stats_command(self, update, command):
-        update.message.reply_text('Pairs: {}'.format(command.chat.pairs().count()))
+    def __get_stats_command(self, command):
+        self.message_sender.reply(command, 'Pairs: {}'.format(command.chat.pairs().count()))

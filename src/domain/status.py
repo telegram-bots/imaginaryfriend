@@ -1,11 +1,11 @@
+from .abstract_entity import AbstractEntity
 from src.utils import deep_get_attr
 from src.config import config
 
 
-class Status:
+class Status(AbstractEntity):
     def __init__(self, chat, message):
-        self.chat    = chat
-        self.message = message
+        super(Status).__init__(chat=chat, message=message)
 
     def is_bot_kicked(self):
         """Returns True if the bot was kicked from group.
