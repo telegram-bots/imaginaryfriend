@@ -58,15 +58,18 @@ class Message:
         return random.randint(0, 100) < getattr(self.chat, 'random_chance', config['bot']['default_chance'])
 
     def __get_words(self):
-        text = list(self.text)
+        symbols = list(self.text)
 
         def prettify(word):
             lowercase_word = word.lower().strip()
-            pretty_word = lowercase_word.strip(config['grammar']['all'])
+            last_symbol = lowercase_word[-1:]
+            if last_symbol not in config['grammar']['end_sentence']:
+                last_symbol = ''
+            pretty_word = lowercase_word.strip(config['grammar']['all']) + last_symbol
 
             return pretty_word if pretty_word != '' and len(pretty_word) > 2 else lowercase_word
 
         for entity in self.message.entities:
-            text[entity.offset:entity.length] = ' ' * entity.length
+            symbols[entity.offset:entity.length] = ' ' * entity.length
 
-        return list(filter(None, map(prettify, ''.join(text).split(' '))))
+        return list(filter(None, map(prettify, ''.join(symbols).split(' '))))
