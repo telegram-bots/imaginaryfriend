@@ -1,8 +1,16 @@
 import random
+import re
 
 
 def capitalize(string):
     return string[:1].upper() + string[1:]
+
+
+def strings_has_equal_letters(str1, str2):
+    def clear_symbols(string):
+        return re.sub(r'[\W_]', '', string).lower()
+
+    return clear_symbols(str1) == clear_symbols(str2)
 
 
 def random_element(xlist):

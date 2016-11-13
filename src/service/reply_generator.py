@@ -1,5 +1,6 @@
+import random
 from src.config import config
-from src.utils import *
+from src.utils import strings_has_equal_letters, capitalize, random_element
 from src.entity.word import Word
 from src.entity.pair import Pair
 
@@ -9,7 +10,12 @@ class ReplyGenerator:
         pass
 
     def generate(self, message):
-        return self.generate_story(message, message.words, random.randint(0, 2) + 1)
+        result = self.generate_story(message, message.words, random.randint(0, 2) + 1)
+
+        if strings_has_equal_letters(result, ''.join(message.words)):
+            return ''
+
+        return result
 
     def generate_story(self, message, words, sentences_count):
         word_ids = Word.where_in('word', words).lists('id').all()
