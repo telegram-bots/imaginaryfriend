@@ -6,7 +6,7 @@ from src.config import config
 
 class Message(AbstractEntity):
     def __init__(self, chat, message):
-        super(Message).__init__(chat=chat, message=message)
+        super(Message, self).__init__(chat=chat, message=message)
 
         if self.has_text():
             self.text = message.text

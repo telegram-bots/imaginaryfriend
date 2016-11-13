@@ -5,7 +5,7 @@ from src.config import config
 
 class Status(AbstractEntity):
     def __init__(self, chat, message):
-        super(Status).__init__(chat=chat, message=message)
+        super(Status, self).__init__(chat=chat, message=message)
 
     def is_bot_kicked(self):
         """Returns True if the bot was kicked from group.

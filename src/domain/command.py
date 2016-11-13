@@ -3,7 +3,7 @@ from .abstract_entity import AbstractEntity
 
 class Command(AbstractEntity):
     def __init__(self, chat, message):
-        super(Command).__init__(chat=chat, message=message)
+        super(Command, self).__init__(chat=chat, message=message)
         self.name = Command.parse_name(message)
         self.args = Command.parse_args(message)
 
