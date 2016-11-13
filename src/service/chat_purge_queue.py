@@ -3,6 +3,7 @@ import logging
 from datetime import datetime, timedelta
 from telegram.ext import Job
 from src.entity.chat import Chat
+from src.entity.reply import Reply
 from src.entity.job import Job as JobEntity
 from src.config import config
 
@@ -62,6 +63,8 @@ class ChatPurgeQueue:
 
         chat = Chat.find(chat_id)
         if chat is not None:
+            for pairs in chat.pairs().select('id').chunk(500):
+                Reply.where_in('pair_id', pairs.pluck('id').all()).delete()
             chat.pairs().delete()
             chat.delete()
 
