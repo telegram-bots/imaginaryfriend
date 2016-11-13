@@ -38,9 +38,12 @@ class MessageHandler(ParentHandler):
                 or message.is_private() \
                 or message.is_reply_to_bot() \
                 or message.is_random_answer():
-            reply = self.reply_generator.generate(message)
-            if reply != '':
-                self.message_sender.answer(message, reply)
+            text = self.reply_generator.generate(message)
+
+            if message.is_reply_to_bot():
+                self.message_sender.reply(message, text)
+            else:
+                self.message_sender.answer(message, text)
 
     def __process_sticker(self, message):
         if message.has_anchors() \
