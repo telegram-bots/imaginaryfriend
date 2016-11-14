@@ -21,8 +21,6 @@ class MessageHandler(ParentHandler):
         chat = Chat.get_chat(update.message)
         message = Message(chat=chat, message=update.message)
 
-        self.__notify(message)
-
         if message.has_text():
             logging.debug("[Chat %s %s bare_text] %s" %
                           (message.chat.chat_type,
@@ -34,10 +32,8 @@ class MessageHandler(ParentHandler):
         elif message.is_sticker():
             return self.__process_sticker(message)
 
-    def __notify(self, message):
-        self.message_sender.send_action(entity=message, action=ChatAction.TYPING)
-
     def __process_message(self, message):
+        self.message_sender.send_action(entity=message, action=ChatAction.TYPING)
         self.data_learner.learn(message)
 
         if message.has_anchors() \
