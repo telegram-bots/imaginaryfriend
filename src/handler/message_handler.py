@@ -33,13 +33,17 @@ class MessageHandler(ParentHandler):
             return self.__process_sticker(message)
 
     def __process_message(self, message):
-        self.message_sender.send_action(entity=message, action=ChatAction.TYPING)
-        self.data_learner.learn(message)
-
-        if message.has_anchors() \
+        should_answer = message.has_anchors() \
                 or message.is_private() \
                 or message.is_reply_to_bot() \
-                or message.is_random_answer():
+                or message.is_random_answer()
+
+        if should_answer:
+            self.message_sender.send_action(entity=message, action=ChatAction.TYPING)
+
+        self.data_learner.learn(message)
+
+        if should_answer:
             text = self.reply_generator.generate(message)
 
             if message.is_reply_to_bot():
