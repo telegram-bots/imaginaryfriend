@@ -1,6 +1,7 @@
 import logging
 
 from telegram.ext import MessageHandler as ParentHandler, Filters
+from telegram import ChatAction
 
 from src.domain.message import Message
 from src.entity.chat import Chat
@@ -20,6 +21,8 @@ class MessageHandler(ParentHandler):
         chat = Chat.get_chat(update.message)
         message = Message(chat=chat, message=update.message)
 
+        self.__notify(message)
+
         if message.has_text():
             logging.debug("[Chat %s %s bare_text] %s" %
                           (message.chat.chat_type,
@@ -30,6 +33,9 @@ class MessageHandler(ParentHandler):
             return self.__process_message(message)
         elif message.is_sticker():
             return self.__process_sticker(message)
+
+    def __notify(self, message):
+        self.message_sender.send_action(entity=message, action=ChatAction.TYPING)
 
     def __process_message(self, message):
         self.data_learner.learn(message)
