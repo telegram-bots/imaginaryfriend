@@ -1,4 +1,5 @@
 import random
+import re
 from .abstract_entity import AbstractEntity
 from src.utils import deep_get_attr
 from src.config import config
@@ -58,16 +59,21 @@ class Message(AbstractEntity):
         return random.randint(0, 100) < getattr(self.chat, 'random_chance', config['bot']['default_chance'])
 
     def __get_words(self):
-        symbols = list(self.text)
+        symbols = list(re.sub('\s', ' ', self.text))
 
         def prettify(word):
             lowercase_word = word.lower().strip()
             last_symbol = lowercase_word[-1:]
             if last_symbol not in config['grammar']['end_sentence']:
                 last_symbol = ''
-            pretty_word = lowercase_word.strip(config['grammar']['all']) + last_symbol
+            pretty_word = lowercase_word.strip(config['grammar']['all'])
 
-            return pretty_word if pretty_word != '' and len(pretty_word) > 2 else lowercase_word
+            if pretty_word != '' and len(pretty_word) > 2:
+                return pretty_word + last_symbol
+            elif lowercase_word in config['grammar']['all']:
+                return None
+
+            return lowercase_word
 
         for entity in self.message.entities:
             symbols[entity.offset:entity.length] = ' ' * entity.length
