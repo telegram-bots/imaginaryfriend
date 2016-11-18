@@ -7,7 +7,7 @@ import src.entity.word
 
 
 class Reply(Model):
-    __guarded__ = ['id']
+    __fillable__ = ['pair_id', 'word_id', 'count']
     __timestamps__ = False
 
     @belongs_to_many

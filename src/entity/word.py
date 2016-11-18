@@ -5,7 +5,7 @@ import src.entity.chat
 
 
 class Word(Model):
-    __guarded__ = ['id']
+    __fillable__ = ['word']
     __timestamps__ = False
 
     @has_many
