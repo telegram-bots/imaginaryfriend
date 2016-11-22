@@ -1,10 +1,12 @@
 import random
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+
+from telegram import Update
 from telegram.ext import Handler
 
+from src.domain.command import Command
 from src.entity.chat import Chat
 from src.entity.pair import Pair
-from src.domain.command import Command
+from src.entity.reply import Reply
 from src.entity.word import Word
 
 
@@ -40,14 +42,17 @@ class CommandHandler(Handler):
         command = Command(chat=chat, message=update.message)
 
         try:
-            self.commands[command.name](bot, command)
+            if command.name == 'moderate':
+                self.commands['moderate'](bot, command)
+            else:
+                self.commands[command.name](command)
         except (IndexError, ValueError):
             self.message_sender.reply(command, 'Invalid command! Type /help')
 
-    def __start_command(self, bot, command):
+    def __start_command(self, command):
         self.message_sender.reply(command, 'Hi! :3')
 
-    def __help_command(self, bot, command):
+    def __help_command(self, command):
         self.message_sender.reply(
             command,
             """Add me to your group and let me listen to your chat for a while.
@@ -64,7 +69,7 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
 """
         )
 
-    def __ping_command(self, bot, command):
+    def __ping_command(self, command):
         answers = [
             'echo',
             'pong',
@@ -75,7 +80,7 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
 
         self.message_sender.reply(command, random.choice(answers))
 
-    def __set_chance_command(self, bot, command):
+    def __set_chance_command(self, command):
         try:
             random_chance = int(command.args[0])
 
@@ -88,10 +93,10 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
         except (IndexError, ValueError):
             self.message_sender.reply(command, 'Usage: /set_chance 1-50.')
 
-    def __get_chance_command(self, bot, command):
+    def __get_chance_command(self, command):
         self.message_sender.reply(command, 'Current chance: {}'.format(command.chat.random_chance))
 
-    def __get_stats_command(self, bot, command):
+    def __get_stats_command(self, command):
         self.message_sender.reply(command, 'Pairs: {}'.format(command.chat.pairs().count()))
 
     def __moderate_command(self, bot, command):
@@ -105,20 +110,20 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
 
                 return user_id in admin_ids
 
-            def generate_keyboard(words):
-                custom_keyboard = []
+            def generate_list(words):
+                list = []
                 for k, v in words.items():
-                    custom_keyboard.append([
-                        InlineKeyboardButton(text=v, callback_data='nothing'),
-                        InlineKeyboardButton(text='🔲', callback_data=str(k))
-                    ])
+                    list.append("- %s : %d" % (v, k))
 
-                custom_keyboard.append([
-                    InlineKeyboardButton(text='Cancel', callback_data='cancel'),
-                    InlineKeyboardButton(text='OK', callback_data='remove_all_marked_words')
-                ])
+                return '\n'.join(list)
 
-                return InlineKeyboardMarkup(custom_keyboard)
+            def find_pairs(chat_id, word_ids):
+                return Pair.where('chat_id', chat_id) \
+                    .where(
+                        Pair.query().where_in('first_id', word_ids)
+                            .or_where_in('second_id', word_ids)
+                    ) \
+                    .get()
 
             def find_current_chat_words(search_word):
                 found_words = Word.where('word', 'like', search_word + '%') \
@@ -129,18 +134,8 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
                 if len(found_words) == 0:
                     return []
 
-                found_words_keys = list(found_words.keys())
-
-                in_current_chat = Pair.select('first_id', 'second_id') \
-                    .where('chat_id', command.chat.id) \
-                    .where(
-                        Pair.query().where_in('first_id', found_words_keys)
-                            .or_where_in('second_id', found_words_keys)
-                    ) \
-                    .get()
-
                 to_keep = []
-                for pair in in_current_chat:
+                for pair in find_pairs(command.chat.id, list(found_words.keys())):
                     if pair.first_id in found_words:
                         to_keep.append(pair.first_id)
                     if pair.second_id in found_words:
@@ -153,15 +148,20 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
             if not is_admin():
                 return self.message_sender.reply(command, 'You don\'t have admin privileges!')
 
-            found_words = find_current_chat_words(command.args[0])
+            if len(command.args) == 2:
+                pairs_ids = find_pairs(command.chat.id, [command.args[1]]).lists('id')
 
-            if len(found_words) == 0:
-                self.message_sender.reply(command, 'No words found!')
+                Pair.where_in('id', pairs_ids).delete()
+                Reply.where_in('pair_id', pairs_ids).delete()
             else:
-                self.message_sender.send_reply_markup(command,
-                                                      message="Mark all words to delete and press OK, "
-                                                              "or press Cancel to close this window",
-                                                      reply_markup=generate_keyboard(found_words))
+                found_words = find_current_chat_words(command.args[0])
+
+                if len(found_words) == 0:
+                    self.message_sender.reply(command, 'No words found!')
+                else:
+                    self.message_sender.reply(command, generate_list(found_words))
         except (IndexError, ValueError):
-            self.message_sender.reply(command, 'Usage: /moderate <word>')
+            self.message_sender.reply(command, """Usage:
+/moderate <word> for search
+/moderate <word> <word_id> for deletion""")
 
