@@ -1,6 +1,6 @@
 My great plan is to create a Telegram chat bot that would be like [shizoid](https://github.com/top4ek/shizoid), but in Python and maybe with some extra features.
 
-A-a-a-a-and... it works! Thanks to [@REDNBLACK](https://github.com/REDNBLACK).
+A-a-a-a-and... it works (@ImaginaryFriendBot)! Thanks to [@REDNBLACK](https://github.com/REDNBLACK). 
 
 ## Features
 
@@ -11,7 +11,36 @@ ImaginaryFriend can:
 * send (one!) sticker ("I'm frustrated by all these stickers"),
 * do some commands.
 
-### Commands
+### Examples
+
+```
+– @ImaginaryFriendBot один ты меня понимаешь
+– Ты глупый кот. Меня зовут антон иванов, мне только что поймала ту же пустоту.
+– привет, Антон
+– Привет!
+– оч приятно, Антон. Я Боря
+– Я не знаю юридических тонкостей но по факту квартира же твоя! Боря кот. Оч приятно антон.
+– Чем ты занимаешься, ты юрист?
+– Ты не видишь чтоль?
+– Ну извини, решил уточнить. Как дела то?
+– Как дела с потоками в яве обстоят? Ну ты понел. Дела отлично, а твои как?
+```
+
+```
+– Нет. У меня друг в дестве кусался.
+– он тебя загрыз?
+– Он же говна кусок.
+– тебя загрыз кусок говна?
+– Тебя наверх задрать надо.
+– ты сегодня особо в тему пишешь, что с тобой, ты поумнел?
+– Что бы крашилось :3?
+– да ты суицидник XD
+– Ты не очень умный?
+– годный бот
+– Бот захватит мир.
+```
+
+## Commands
 
 * `/ping`,
 * `/get_stats`: get information on how many pairs are known by ImaginaryFriend,
