@@ -107,10 +107,10 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
 
             def generate_keyboard(words):
                 custom_keyboard = []
-                for k, v in words:
+                for k, v in words.items():
                     custom_keyboard.append([
                         InlineKeyboardButton(text=v, callback_data='nothing'),
-                        InlineKeyboardButton(text='🔲', callback_data=k)
+                        InlineKeyboardButton(text='🔲', callback_data=str(k))
                     ])
 
                 custom_keyboard.append([
@@ -126,19 +126,16 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
                     .limit(10) \
                     .lists('word', 'id')
 
-                print(found_words)
-
                 if len(found_words) == 0:
                     return []
 
-                found_words_values = list(found_words.values())
+                found_words_keys = list(found_words.keys())
 
                 in_current_chat = Pair.select('first_id', 'second_id') \
-                    .where('chat_id', command.chat.telegram_id) \
-                    .where_in('first_id', found_words_values) \
-                    .or_where(
-                        Pair.query().where('chat_id', command.chat.telegram_id)
-                                   .where_in('second_id', found_words_values)
+                    .where('chat_id', command.chat.id) \
+                    .where(
+                        Pair.query().where_in('first_id', found_words_keys)
+                            .or_where_in('second_id', found_words_keys)
                     ) \
                     .get()
 
@@ -149,9 +146,9 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
                     if pair.second_id in found_words:
                         to_keep.append(pair.second_id)
 
-                print(to_keep)
+                to_keep = set(to_keep)
 
-                return dict((k, found_words[k]) for k in to_keep if k in found_words)
+                return dict((k, found_words[k]) for k in found_words if k in to_keep)
 
             if not is_admin():
                 return self.message_sender.reply(command, 'You don\'t have admin privileges!')
