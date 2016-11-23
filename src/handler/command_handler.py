@@ -5,9 +5,7 @@ from telegram.ext import Handler
 
 from src.domain.command import Command
 from src.entity.chat import Chat
-from src.entity.pair import Pair
-from src.entity.reply import Reply
-from src.entity.word import Word
+from .moderate_command import ModerateCommand
 
 
 class CommandHandler(Handler):
@@ -101,65 +99,15 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
 
     def __moderate_command(self, bot, command):
         try:
-            def is_admin():
-                user_id = command.message.from_user.id
-                admin_ids = list(map(
-                    lambda member: member.user.id,
-                    bot.get_chat_administrators(chat_id=command.chat.telegram_id)
-                ))
+            moderate = ModerateCommand(bot, command)
 
-                return user_id in admin_ids
-
-            def generate_list(words):
-                list = []
-                for k, v in words.items():
-                    list.append("- %s : %d" % (v, k))
-
-                return '\n'.join(list)
-
-            def find_pairs(chat_id, word_ids):
-                return Pair.where('chat_id', chat_id) \
-                    .where(
-                        Pair.query().where_in('first_id', word_ids)
-                            .or_where_in('second_id', word_ids)
-                    ) \
-                    .get()
-
-            def find_current_chat_words(search_word):
-                found_words = Word.where('word', 'like', search_word + '%') \
-                    .order_by('word', 'asc') \
-                    .limit(10) \
-                    .lists('word', 'id')
-
-                if len(found_words) == 0:
-                    return []
-
-                to_keep = []
-                for pair in find_pairs(command.chat.id, list(found_words.keys())):
-                    if pair.first_id in found_words:
-                        to_keep.append(pair.first_id)
-                    if pair.second_id in found_words:
-                        to_keep.append(pair.second_id)
-
-                to_keep = set(to_keep)
-
-                return dict((k, found_words[k]) for k in found_words if k in to_keep)
-
-            if not is_admin():
+            if not moderate.is_admin():
                 return self.message_sender.reply(command, 'You don\'t have admin privileges!')
 
             if len(command.args) == 2:
-                pairs_ids = find_pairs(command.chat.id, [command.args[1]]).lists('id')
-
-                Pair.where_in('id', pairs_ids).delete()
-                Reply.where_in('pair_id', pairs_ids).delete()
+                moderate.remove_word(command.args[1])
             else:
-                found_words = find_current_chat_words(command.args[0])
-
-                if len(found_words) == 0:
-                    self.message_sender.reply(command, 'No words found!')
-                else:
-                    self.message_sender.reply(command, generate_list(found_words))
+                self.message_sender.reply(command, moderate.find_similar_words(command.args[0]))
         except (IndexError, ValueError):
             self.message_sender.reply(command, """Usage:
 /moderate <word> for search
