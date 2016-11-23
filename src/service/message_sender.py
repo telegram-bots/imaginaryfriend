@@ -29,6 +29,11 @@ class MessageSender:
                               reply_to_message_id=entity.message.message_id,
                               text=message)
 
+    def send_reply_markup(self, entity, message, reply_markup):
+        self.bot.send_message(chat_id=entity.chat.telegram_id,
+                              text=message,
+                              reply_markup=reply_markup)
+
     def send_action(self, entity, action):
         logging.debug("[Chat %s %s send_action] %s" %
                       (entity.chat.chat_type,
