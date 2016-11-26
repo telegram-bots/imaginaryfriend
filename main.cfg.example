@@ -8,7 +8,7 @@ default_chance=5
 
 [grammar]
 end_sentence=.....!!?
-all=.!?,;:()\-—"
+all=.!?;()\-—"[]{}«»/*&^#$
 
 [logging]
 level=INFO
