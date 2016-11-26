@@ -13,6 +13,12 @@ all=.!?;()\-—"[]{}«»/*&^#$
 [logging]
 level=INFO
 
+[redis]
+host=
+port=
+db=
+links_lifetime=28800.0
+
 [db]
 driver=
 host=

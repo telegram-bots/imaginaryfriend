@@ -1,5 +1,6 @@
 import random
 import re
+from urllib.parse import urlparse
 from .abstract_entity import AbstractEntity
 from src.utils import deep_get_attr
 from src.config import config
@@ -11,9 +12,12 @@ class Message(AbstractEntity):
 
         if self.has_text():
             self.text = message.text
+            self.links = self.__get_links()
             self.words = self.__get_words()
         else:
             self.text = ''
+            self.links = []
+            self.words = []
 
     def has_text(self):
         """Returns True if the message has text.
@@ -34,6 +38,9 @@ class Message(AbstractEntity):
         """Returns True if the message has entities (attachments).
         """
         return self.message.entities is not None
+
+    def has_links(self):
+        return len(self.links) != 0
 
     def has_anchors(self):
         """Returns True if the message contains at least one anchor from anchors config.
@@ -58,6 +65,20 @@ class Message(AbstractEntity):
         """
         return random.randint(0, 100) < getattr(self.chat, 'random_chance', config['bot']['default_chance'])
 
+    def __get_links(self):
+        links = []
+
+        def prettify(url):
+            link = urlparse(url)
+            host = '.'.join(link.hostname.split('.')[-2:])
+            return '{}{}#{}'.format(host, link.path, link.fragment)
+
+        for entity in filter(lambda e: e.type == 'url', self.message.entities):
+            link = prettify(self.text[entity.offset:entity.length + entity.offset])
+            links.append(link)
+
+        return links
+
     def __get_words(self):
         symbols = list(re.sub('\s', ' ', self.text))
 
@@ -76,6 +97,6 @@ class Message(AbstractEntity):
             return lowercase_word
 
         for entity in self.message.entities:
-            symbols[entity.offset:entity.length] = ' ' * entity.length
+            symbols[entity.offset:entity.length + entity.offset] = ' ' * entity.length
 
         return list(filter(None, map(prettify, ''.join(symbols).split(' '))))

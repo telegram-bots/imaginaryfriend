@@ -8,7 +8,7 @@ from src.entity.chat import Chat
 
 
 class MessageHandler(ParentHandler):
-    def __init__(self, message_sender, data_learner, reply_generator):
+    def __init__(self, message_sender, data_learner, reply_generator, links_checker):
         super(MessageHandler, self).__init__(
             Filters.text | Filters.sticker,
             self.handle)
@@ -16,6 +16,7 @@ class MessageHandler(ParentHandler):
         self.message_sender = message_sender
         self.data_learner = data_learner
         self.reply_generator = reply_generator
+        self.links_checker = links_checker
 
     def handle(self, bot, update):
         chat = Chat.get_chat(update.message)
@@ -42,6 +43,9 @@ class MessageHandler(ParentHandler):
             self.message_sender.send_action(entity=message, action=ChatAction.TYPING)
 
         self.data_learner.learn(message)
+
+        if message.has_links() and self.links_checker.check(message.chat.telegram_id, message.links):
+            self.message_sender.send_sticker(message, "BQADAgAD8gADpOENAAEbAtjuNM5sygI")
 
         if should_answer:
             text = self.reply_generator.generate(message)

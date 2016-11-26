@@ -53,6 +53,7 @@ ImaginaryFriend can:
 * `python >= 3.5.2`
 * `python-telegram-bot==5.2.0`
 * `orator==0.9.2`
+* `redis==2.10.5`
 
 ### Setup
 1. Install dependencies with PIP
