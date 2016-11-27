@@ -13,7 +13,7 @@ class LinksChecker:
         redis = self.redis.instance()
         key = "links:{}".format(chat_id)
         now = datetime.now()
-        delete_at = (now + timedelta(seconds=float(config['redis']['links_lifetime']))).timestamp()
+        delete_at = (now + timedelta(seconds=config.getfloat('links', 'lifetime'))).timestamp()
 
         # Delete stale links
         redis.zremrangebyscore(key, 0, now.timestamp())

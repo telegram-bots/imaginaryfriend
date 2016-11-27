@@ -11,7 +11,7 @@ from src.config import config
 class ChatPurgeQueue:
     queue = None
     jobs = {}
-    default_interval = float(config['bot']['purge_interval'])
+    default_interval = config.getfloat('bot', 'purge_interval')
     job_type = 'purge'
 
     # TODO. Должно взять все задачи из таблицы и проинициализировать их

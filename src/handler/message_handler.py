@@ -1,5 +1,7 @@
 import logging
 
+from random import choice
+from src.config import config
 from telegram.ext import MessageHandler as ParentHandler, Filters
 from telegram import ChatAction
 
@@ -45,7 +47,7 @@ class MessageHandler(ParentHandler):
         self.data_learner.learn(message)
 
         if message.has_links() and self.links_checker.check(message.chat.telegram_id, message.links):
-            self.message_sender.send_sticker(message, "BQADAgAD8gADpOENAAEbAtjuNM5sygI")
+            self.message_sender.send_sticker(message, choice(config.getlist('links', 'stickers')))
 
         if should_answer:
             text = self.reply_generator.generate(message)

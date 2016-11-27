@@ -4,7 +4,7 @@ import redis
 class Redis:
     def __init__(self, config):
         self.pool = redis.ConnectionPool(host=config['redis']['host'],
-                                         port=config['redis']['port'],
+                                         port=config.getint('redis', 'port'),
                                          db=config['redis']['db'])
 
     def instance(self):

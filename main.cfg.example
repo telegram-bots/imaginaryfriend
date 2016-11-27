@@ -13,11 +13,14 @@ all=.!?;()\-—"[]{}«»/*&^#$
 [logging]
 level=INFO
 
+[links]
+lifetime=28800.0
+stickers=BQADAgADGwEAAjbsGwVVGLVNyOWfuwI
+
 [redis]
 host=
 port=
 db=
-links_lifetime=28800.0
 
 [db]
 driver=
