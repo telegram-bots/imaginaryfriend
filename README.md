@@ -1,6 +1,6 @@
 My great plan is to create a Telegram chat bot that would be like [shizoid](https://github.com/top4ek/shizoid), but in Python and maybe with some extra features.
 
-A-a-a-a-and... it works (@ImaginaryFriendBot)! Thanks to [@REDNBLACK](https://github.com/REDNBLACK). 
+A-a-a-a-and... it works! Thanks to [@REDNBLACK](https://github.com/REDNBLACK). 
 
 ## Features
 
