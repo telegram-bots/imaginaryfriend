@@ -75,6 +75,9 @@ class Message(AbstractEntity):
         links = []
 
         def prettify(url):
+            if not url.startswith('http://') and not url.startswith('https://'):
+                url = 'http://' + url
+
             link = urlparse(url)
             host = '.'.join(link.hostname.split('.')[-2:])
             return '{}{}#{}'.format(host, link.path, link.fragment)

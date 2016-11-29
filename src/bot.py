@@ -27,7 +27,7 @@ class Bot:
                                                    reply_generator=ReplyGenerator(),
                                                    links_checker=LinksChecker(redis)))
         self.dispatcher.add_handler(CommandHandler())
-        self.dispatcher.add_handler(StatusHandler(chat_purge_queue=ChatPurgeQueue(self.updater.job_queue)))
+        self.dispatcher.add_handler(StatusHandler(chat_purge_queue=ChatPurgeQueue(self.updater.job_queue, redis)))
 
         self.updater.start_polling()
         self.updater.idle()

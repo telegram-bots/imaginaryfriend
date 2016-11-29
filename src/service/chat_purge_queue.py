@@ -1,32 +1,33 @@
 import logging
+import json
 
 from datetime import datetime, timedelta
 from telegram.ext import Job
 from src.entity.chat import Chat
 from src.entity.reply import Reply
-from src.entity.job import Job as JobEntity
 from src.config import config
 
 
 class ChatPurgeQueue:
-    queue = None
     jobs = {}
     default_interval = config.getfloat('bot', 'purge_interval')
-    job_type = 'purge'
 
-    # TODO. Должно взять все задачи из таблицы и проинициализировать их
-    def __init__(self, queue):
+    def __init__(self, queue, redis):
         self.queue = queue
-        existing_jobs = JobEntity.where('type', self.job_type).get().all()
+        self.redis = redis
+        existing_jobs = map(lambda j: json.loads(j.decode('utf-8')),
+                            redis.instance().hgetall('purge_queue').values())
 
         for job in existing_jobs:
+            job_datetime = datetime.fromtimestamp(job['execute_at'])
             current_datetime = datetime.now()
-            if current_datetime >= job.execute_at:
+
+            if current_datetime >= job_datetime:
                 interval = 60
             else:
-                interval = (job.execute_at - current_datetime).total_seconds()
+                interval = (job_datetime - current_datetime).total_seconds()
 
-            self.add(chat_id=job.chat_id, interval=interval, write_to_db=False)
+            self.add(chat_id=job['chat_id'], interval=interval, write_to_db=False)
 
     def add(self, chat_id, interval=default_interval, write_to_db=True):
         scheduled_at = datetime.now() + timedelta(seconds=interval)
@@ -39,10 +40,10 @@ class ChatPurgeQueue:
         self.queue.put(job)
 
         if write_to_db:
-            JobEntity.create(chat_id=chat_id,
-                             type=self.job_type,
-                             repeat=False,
-                             execute_at=scheduled_at)
+            self.redis.instance().hset(
+                "purge_queue",
+                chat_id,
+                json.dumps({'chat_id': chat_id, 'execute_at': scheduled_at.timestamp()}))
 
     def remove(self, chat_id):
         if chat_id not in self.jobs:
@@ -52,7 +53,7 @@ class ChatPurgeQueue:
 
         job = self.jobs.pop(chat_id)
         job.schedule_removal()
-        JobEntity.where('chat_id', chat_id).where('type', self.job_type).delete()
+        self.redis.instance().hdel("purge_queue", chat_id)
 
     def __make_purge_job(self, chat_id, interval=default_interval):
         return Job(self.__purge_callback, interval, repeat=False, context=chat_id)
@@ -68,4 +69,4 @@ class ChatPurgeQueue:
             chat.pairs().delete()
             chat.delete()
 
-        JobEntity.where('chat_id', chat_id).where('type', self.job_type).delete()
+        self.redis.instance().hdel("purge_queue", chat_id)
