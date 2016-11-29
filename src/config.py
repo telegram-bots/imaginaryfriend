@@ -1,7 +1,7 @@
 import configparser
 
 sections = {
-    'bot': ['token', 'name', 'anchors', 'messages', 'purge_interval', 'default_chance'],
+    'bot': ['token', 'name', 'anchors', 'messages', 'purge_interval', 'default_chance', 'spam_stickers'],
     'grammar': ['end_sentence', 'all'],
     'logging': ['level'],
     'links': ['lifetime', 'stickers'],

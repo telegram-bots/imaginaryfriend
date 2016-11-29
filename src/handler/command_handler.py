@@ -1,4 +1,5 @@
 import random
+import logging
 
 from telegram import Update
 from telegram.ext import Handler
@@ -9,7 +10,7 @@ from .moderate_command import ModerateCommand
 
 
 class CommandHandler(Handler):
-    def __init__(self, message_sender):
+    def __init__(self):
         super(CommandHandler, self).__init__(self.handle)
         self.commands = {
             'start':      self.__start_command,
@@ -20,7 +21,6 @@ class CommandHandler(Handler):
             'get_stats':  self.__get_stats_command,
             'moderate':   self.__moderate_command
         }
-        self.message_sender = message_sender
 
     def check_update(self, update):
         if isinstance(update, Update) and update.message:
@@ -40,18 +40,27 @@ class CommandHandler(Handler):
         command = Command(chat=chat, message=update.message)
 
         try:
-            if command.name == 'moderate':
-                self.commands['moderate'](bot, command)
-            else:
-                self.commands[command.name](command)
+            self.commands[command.name](bot, command)
         except (IndexError, ValueError):
-            self.message_sender.reply(command, 'Invalid command! Type /help')
+            self.__reply(bot, command, 'Invalid command! Type /help')
+            
+    def __reply(self, bot, command, message):
+        logging.debug("[Chat %s %s command] %s: %s" %
+                      (command.chat.chat_type,
+                       command.chat.telegram_id,
+                       command.name,
+                       message))
 
-    def __start_command(self, command):
-        self.message_sender.reply(command, 'Hi! :3')
+        bot.send_message(chat_id=command.chat.telegram_id,
+                         reply_to_message_id=command.message.message_id,
+                         text=message)
 
-    def __help_command(self, command):
-        self.message_sender.reply(
+    def __start_command(self, bot, command):
+        self.__reply(bot, command, 'Hi! :3')
+
+    def __help_command(self, bot, command):
+        self.__reply(
+            bot,
             command,
             """Add me to your group and let me listen to your chat for a while.
 When I learn enough word pairs, I'll start bringing fun and absurdity to your conversations.
@@ -67,7 +76,7 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
 """
         )
 
-    def __ping_command(self, command):
+    def __ping_command(self, bot, command):
         answers = [
             'echo',
             'pong',
@@ -76,9 +85,9 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
             'pingback'
         ]
 
-        self.message_sender.reply(command, random.choice(answers))
+        self.__reply(bot, command, random.choice(answers))
 
-    def __set_chance_command(self, command):
+    def __set_chance_command(self, bot, command):
         try:
             random_chance = int(command.args[0])
 
@@ -87,29 +96,29 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
 
             command.chat.update(random_chance=random_chance)
 
-            self.message_sender.reply(command, 'Set chance to: {}'.format(random_chance))
+            self.__reply(bot, command, 'Set chance to: {}'.format(random_chance))
         except (IndexError, ValueError):
-            self.message_sender.reply(command, 'Usage: /set_chance 1-50.')
+            self.__reply(bot, command, 'Usage: /set_chance 1-50.')
 
-    def __get_chance_command(self, command):
-        self.message_sender.reply(command, 'Current chance: {}'.format(command.chat.random_chance))
+    def __get_chance_command(self, bot, command):
+        self.__reply(bot, command, 'Current chance: {}'.format(command.chat.random_chance))
 
-    def __get_stats_command(self, command):
-        self.message_sender.reply(command, 'Pairs: {}'.format(command.chat.pairs().count()))
+    def __get_stats_command(self, bot, command):
+        self.__reply(bot, command, 'Pairs: {}'.format(command.chat.pairs().count()))
 
     def __moderate_command(self, bot, command):
         try:
             moderate = ModerateCommand(bot, command)
 
             if not moderate.is_admin():
-                return self.message_sender.reply(command, 'You don\'t have admin privileges!')
+                return self.__reply(bot, command, 'You don\'t have admin privileges!')
 
             if len(command.args) == 2:
                 moderate.remove_word(command.args[1])
             else:
-                self.message_sender.reply(command, moderate.find_similar_words(command.args[0]))
+                self.__reply(bot, command, moderate.find_similar_words(command.args[0]))
         except (IndexError, ValueError):
-            self.message_sender.reply(command, """Usage:
+            self.__reply(bot, command, """Usage:
 /moderate <word> for search
 /moderate <word> <word_id> for deletion""")
 

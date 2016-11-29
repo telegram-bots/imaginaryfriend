@@ -5,6 +5,7 @@ anchors=
 messages=
 purge_interval=43200.0
 default_chance=5
+spam_stickers=BQADAgADSAIAAkcGQwU-G-9SZUDTWAI
 
 [grammar]
 end_sentence=.....!!?

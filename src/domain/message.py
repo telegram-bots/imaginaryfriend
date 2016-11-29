@@ -65,6 +65,12 @@ class Message(AbstractEntity):
         """
         return random.randint(0, 100) < getattr(self.chat, 'random_chance', config['bot']['default_chance'])
 
+    def should_answer(self):
+        return self.has_anchors() \
+            or self.is_private() \
+            or self.is_reply_to_bot() \
+            or self.is_random_answer()
+
     def __get_links(self):
         links = []
 
