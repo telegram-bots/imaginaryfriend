@@ -18,6 +18,12 @@ level=INFO
 lifetime=28800.0
 stickers=BQADAgADGwEAAjbsGwVVGLVNyOWfuwI
 
+[updates]
+mode=polling
+host=
+port=
+url=
+
 [redis]
 host=
 port=
