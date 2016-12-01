@@ -7,8 +7,10 @@ from src.config import config
 
 
 class Message(AbstractEntity):
-    def __init__(self, chat, message):
-        super(Message, self).__init__(chat=chat, message=message)
+    def __init__(self, chance, message):
+        super(Message, self).__init__(message)
+
+        self.chance = chance
 
         if self.has_text():
             self.text = message.text
@@ -63,7 +65,7 @@ class Message(AbstractEntity):
     def is_random_answer(self):
         """Returns True if reply chance for this chat is high enough
         """
-        return random.randint(0, 100) < getattr(self.chat, 'random_chance', config['bot']['default_chance'])
+        return random.randint(0, 100) < self.chance
 
     def should_answer(self):
         return self.has_anchors() \

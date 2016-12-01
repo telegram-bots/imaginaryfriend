@@ -5,12 +5,12 @@ from telegram import Update
 from telegram.ext import Handler
 
 from src.domain.command import Command
-from src.entity.chat import Chat
+from src.entity.pair import Pair
 from .moderate_command import ModerateCommand
 
 
 class CommandHandler(Handler):
-    def __init__(self):
+    def __init__(self, chance_manager):
         super(CommandHandler, self).__init__(self.handle)
         self.commands = {
             'start':      self.__start_command,
@@ -21,6 +21,7 @@ class CommandHandler(Handler):
             'get_stats':  self.__get_stats_command,
             'moderate':   self.__moderate_command
         }
+        self.chance_manager = chance_manager
 
     def check_update(self, update):
         if isinstance(update, Update) and update.message:
@@ -36,8 +37,7 @@ class CommandHandler(Handler):
         return self.callback(dispatcher.bot, update, **optional_args)
 
     def handle(self, bot, update):
-        chat = Chat.get_chat(update.message)
-        command = Command(chat=chat, message=update.message)
+        command = Command(update.message)
 
         try:
             self.commands[command.name](bot, command)
@@ -46,12 +46,12 @@ class CommandHandler(Handler):
             
     def __reply(self, bot, command, message):
         logging.debug("[Chat %s %s command] %s: %s" %
-                      (command.chat.chat_type,
-                       command.chat.telegram_id,
+                      (command.chat_type,
+                       command.chat_id,
                        command.name,
                        message))
 
-        bot.send_message(chat_id=command.chat.telegram_id,
+        bot.send_message(chat_id=command.chat_id,
                          reply_to_message_id=command.message.message_id,
                          text=message)
 
@@ -89,22 +89,24 @@ In 12 hours, I'll forget everything that have been learned in your chat, so you 
 
     def __set_chance_command(self, bot, command):
         try:
-            random_chance = int(command.args[0])
+            chance = int(command.args[0])
 
-            if random_chance < 1 or random_chance > 50:
+            if chance < 1 or chance > 50:
                 raise ValueError
 
-            command.chat.update(random_chance=random_chance)
+            self.chance_manager.set_chance(chat_id=command.chat_id, chance=chance)
 
-            self.__reply(bot, command, 'Set chance to: {}'.format(random_chance))
+            self.__reply(bot, command, 'Set chance to: {}'.format(chance))
         except (IndexError, ValueError):
             self.__reply(bot, command, 'Usage: /set_chance 1-50.')
 
     def __get_chance_command(self, bot, command):
-        self.__reply(bot, command, 'Current chance: {}'.format(command.chat.random_chance))
+        self.__reply(bot, command, 'Current chance: {}'
+                     .format(self.chance_manager.get_chance(command.chat_id)))
 
     def __get_stats_command(self, bot, command):
-        self.__reply(bot, command, 'Pairs: {}'.format(command.chat.pairs().count()))
+        self.__reply(bot, command, 'Pairs: {}'
+                     .format(Pair.where('chat_id', command.chat_id).count()))
 
     def __moderate_command(self, bot, command):
         try:

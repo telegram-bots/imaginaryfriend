@@ -33,7 +33,7 @@ class ModerateCommand:
             return []
 
         to_keep = []
-        for pair in self.__find_pairs(self.entity.chat.id, list(found_words.keys())):
+        for pair in self.__find_pairs(self.entity.chat_id, list(found_words.keys())):
             if pair.first_id in found_words:
                 to_keep.append(pair.first_id)
             if pair.second_id in found_words:
@@ -47,13 +47,13 @@ class ModerateCommand:
         user_id = self.entity.message.from_user.id
         admin_ids = list(map(
             lambda member: member.user.id,
-            self.bot.get_chat_administrators(chat_id=self.entity.chat.telegram_id)
+            self.bot.get_chat_administrators(chat_id=self.entity.chat_id)
         ))
 
         return user_id in admin_ids
 
     def remove_word(self, word_id):
-        pairs_ids = self.__find_pairs(self.entity.chat.id, [word_id]).lists('id')
+        pairs_ids = self.__find_pairs(self.entity.chat_id, [word_id]).lists('id')
 
         Pair.where_in('id', pairs_ids).delete()
         Reply.where_in('pair_id', pairs_ids).delete()

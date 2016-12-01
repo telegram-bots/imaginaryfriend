@@ -2,8 +2,8 @@ from .abstract_entity import AbstractEntity
 
 
 class Command(AbstractEntity):
-    def __init__(self, chat, message):
-        super(Command, self).__init__(chat=chat, message=message)
+    def __init__(self, message):
+        super(Command, self).__init__(message)
         self.name = Command.parse_name(message)
         self.args = Command.parse_args(message)
 
