@@ -80,7 +80,7 @@ class Message(AbstractEntity):
 
             link = urlparse(url)
             host = '.'.join(link.hostname.split('.')[-2:])
-            return '{}{}#{}'.format(host, link.path, link.fragment)
+            return '{}{}#{}?{}'.format(host, link.path, link.fragment, link.query)
 
         for entity in filter(lambda e: e.type == 'url', self.message.entities):
             link = prettify(self.text[entity.offset:entity.length + entity.offset])

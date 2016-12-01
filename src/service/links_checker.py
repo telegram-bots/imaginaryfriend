@@ -6,13 +6,14 @@ class LinksChecker:
     def __init__(self, redis):
         self.redis = redis
         self.lifetime = timedelta(seconds=config.getfloat('links', 'lifetime'))
+        self.key = "links:{}"
 
     def check(self, chat_id, links):
         """Returns True if at least one link already exists
         """
 
         redis = self.redis.instance()
-        key = "links:{}".format(chat_id)
+        key = self.key.format(chat_id)
         now = datetime.now()
         delete_at = (now + self.lifetime).timestamp()
 
