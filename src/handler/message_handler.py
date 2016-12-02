@@ -22,18 +22,29 @@ class MessageHandler(ParentHandler):
         chance = self.chance_manager.get_chance(update.message.chat.id)
         message = Message(chance=chance, message=update.message)
 
-        if message.has_text():
-            logging.debug("[Chat %s %s bare_text] %s" %
-                          (message.chat_type,
-                           message.chat_id,
-                           message.text))
+        self.__check_media_uniqueness(bot, message)
 
         if message.has_text() and not message.is_editing():
             self.__process_message(bot, message)
         elif message.is_sticker():
             self.__process_sticker(bot, message)
 
+    def __check_media_uniqueness(self, bot, message):
+        if message.has_links() and self.links_checker.check(message.chat_id, message.links):
+            logging.debug("[Chat %s %s not unique media]" %
+                          (message.chat_type,
+                           message.chat_id))
+
+            bot.send_sticker(chat_id=message.chat_id,
+                             reply_to_message_id=message.message.message_id,
+                             sticker=choice(config.getlist('links', 'stickers')))
+
     def __process_message(self, bot, message):
+        logging.debug("[Chat %s %s message length] %s" %
+                      (message.chat_type,
+                       message.chat_id,
+                       len(message.text)))
+
         should_answer = message.should_answer()
 
         if should_answer:
@@ -41,16 +52,11 @@ class MessageHandler(ParentHandler):
 
         self.data_learner.learn(message)
 
-        if message.has_links() and self.links_checker.check(message.chat_id, message.links):
-            bot.send_sticker(chat_id=message.chat_id,
-                             reply_to_message_id=message.message.message_id,
-                             sticker=choice(config.getlist('links', 'stickers')))
-
         if should_answer:
             text = self.reply_generator.generate(message)
             reply_id = None if not message.is_reply_to_bot() else message.message.message_id
 
-            logging.debug("[Chat %s %s answer] %s" %
+            logging.debug("[Chat %s %s answer/reply] %s" %
                           (message.chat_type,
                            message.chat_id,
                            text))

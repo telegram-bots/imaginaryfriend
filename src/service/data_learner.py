@@ -22,12 +22,12 @@ class DataLearner:
 
             words.pop(0)
 
-            pair = Pair.where('chat_id', message.chat.id) \
+            pair = Pair.where('chat_id', message.chat_id) \
                 .where('first_id', first_word_id) \
                 .where('second_id', second_word_id) \
                 .first()
             if pair is None:
-                pair = Pair.create(chat_id=message.chat.id,
+                pair = Pair.create(chat_id=message.chat_id,
                                    first_id=first_word_id,
                                    second_id=second_word_id)
 

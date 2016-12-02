@@ -1,11 +1,9 @@
-from datetime import datetime, timedelta
 from orator.orm import Model
 from orator.orm import belongs_to
 from orator.orm import has_many
 
 from src.utils import random_element
 import src.entity.reply
-import src.entity.chat
 import src.entity.word
 
 
@@ -16,10 +14,6 @@ class Pair(Model):
     @has_many
     def replies(self):
         return src.entity.reply.Reply
-
-    @belongs_to
-    def chat(self):
-        return src.entity.chat.Chat
 
     @belongs_to
     def first(self):

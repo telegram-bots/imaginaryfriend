@@ -29,7 +29,7 @@ class ReplyGenerator:
         second_word_id_list = word_ids
 
         while safety_counter > 0:
-            pair = Pair.get_random_pair(chat_id=message.chat.id,
+            pair = Pair.get_random_pair(chat_id=message.chat_id,
                                         first_id=first_word_id,
                                         second_id_list=second_word_id_list)
             replies = getattr(pair, 'replies', [])
@@ -41,7 +41,7 @@ class ReplyGenerator:
             reply = random.choice(replies.all())
             first_word_id = pair.second.id
 
-            # TODO. WARNING! Do not try to fix, it's magic, i have no clue why
+            # FIXME. WARNING! Do not try to fix, it's magic, i have no clue why
             try:
                 second_word_id_list = [reply.word.id]
             except AttributeError:
@@ -51,7 +51,7 @@ class ReplyGenerator:
                 sentences.append(capitalize(pair.second.word))
                 word_ids.remove(pair.second.id)
 
-            # TODO. WARNING! Do not try to fix, it's magic, i have no clue why
+            # FIXME. WARNING! Do not try to fix, it's magic, i have no clue why
             try:
                 reply_word = reply.word.word
             except AttributeError:
