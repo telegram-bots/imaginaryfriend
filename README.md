@@ -45,7 +45,8 @@ ImaginaryFriend can:
 * `/ping`,
 * `/get_stats`: get information on how many pairs are known by ImaginaryFriend,
 * `/set_chance`: set the probability that ImaginaryFriend would reply to a random message (must be in range 1-50, default: 5),
-* `/get_chance`: get current probability that ImaginaryFriend would reply to a message.
+* `/get_chance`: get current probability that ImaginaryFriend would reply to a message,
+* `/meow`, `/woof`, `/borscht`, `/boobs`, `/butts`: make ImaginaryFriend send a picture.
 
 ## Installation and Setup
 
