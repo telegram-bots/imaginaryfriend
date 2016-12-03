@@ -1,6 +1,5 @@
 import random
 import re
-from urllib.parse import urlparse
 from .abstract_entity import AbstractEntity
 from src.utils import deep_get_attr
 from src.config import config
@@ -14,11 +13,9 @@ class Message(AbstractEntity):
 
         if self.has_text():
             self.text = message.text
-            self.links = self.__get_links()
             self.words = self.__get_words()
         else:
             self.text = ''
-            self.links = []
             self.words = []
 
     def has_text(self):
@@ -40,9 +37,6 @@ class Message(AbstractEntity):
         """Returns True if the message has entities (attachments).
         """
         return self.message.entities is not None
-
-    def has_links(self):
-        return len(self.links) != 0
 
     def has_anchors(self):
         """Returns True if the message contains at least one anchor from anchors config.
@@ -72,23 +66,6 @@ class Message(AbstractEntity):
             or self.is_private() \
             or self.is_reply_to_bot() \
             or self.is_random_answer()
-
-    def __get_links(self):
-        links = []
-
-        def prettify(url):
-            if not url.startswith('http://') and not url.startswith('https://'):
-                url = 'http://' + url
-
-            link = urlparse(url)
-            host = '.'.join(link.hostname.split('.')[-2:])
-            return '{}{}#{}?{}'.format(host, link.path, link.fragment, link.query)
-
-        for entity in filter(lambda e: e.type == 'url', self.message.entities):
-            link = prettify(self.text[entity.offset:entity.length + entity.offset])
-            links.append(link)
-
-        return links
 
     def __get_words(self):
         symbols = list(re.sub('\s', ' ', self.text))

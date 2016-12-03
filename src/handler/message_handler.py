@@ -8,14 +8,17 @@ from src.domain.message import Message
 
 
 class MessageHandler(ParentHandler):
-    def __init__(self, data_learner, reply_generator, links_checker, chance_manager):
+    spam_stickers = config.getlist('bot', 'spam_stickers')
+    media_checker_stickers = config.getlist('media_checker', 'stickers')
+
+    def __init__(self, data_learner, reply_generator, media_checker, chance_manager):
         super(MessageHandler, self).__init__(
             Filters.text | Filters.sticker,
             self.handle)
 
         self.data_learner = data_learner
         self.reply_generator = reply_generator
-        self.links_checker = links_checker
+        self.media_checker = media_checker
         self.chance_manager = chance_manager
 
     def handle(self, bot, update):
@@ -30,14 +33,16 @@ class MessageHandler(ParentHandler):
             self.__process_sticker(bot, message)
 
     def __check_media_uniqueness(self, bot, message):
-        if message.has_links() and self.links_checker.check(message.chat_id, message.links):
+        if not message.is_private()\
+                and message.has_entities()\
+                and self.media_checker.check(message):
             logging.debug("[Chat %s %s not unique media]" %
                           (message.chat_type,
                            message.chat_id))
 
             bot.send_sticker(chat_id=message.chat_id,
                              reply_to_message_id=message.message.message_id,
-                             sticker=choice(config.getlist('links', 'stickers')))
+                             sticker=choice(self.media_checker_stickers))
 
     def __process_message(self, bot, message):
         logging.debug("[Chat %s %s message length] %s" %
@@ -73,4 +78,4 @@ class MessageHandler(ParentHandler):
 
             bot.send_sticker(chat_id=message.chat_id,
                              reply_to_message_id=message.message.message_id,
-                             sticker=choice(config.getlist('bot', 'spam_stickers')))
+                             sticker=choice(self.spam_stickers))

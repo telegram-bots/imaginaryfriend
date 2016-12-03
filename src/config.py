@@ -4,7 +4,8 @@ sections = {
     'bot': ['token', 'name', 'anchors', 'messages', 'purge_interval', 'default_chance', 'spam_stickers'],
     'grammar': ['end_sentence', 'all'],
     'logging': ['level'],
-    'links': ['lifetime', 'stickers'],
+    'updates': ['mode'],
+    'media_checker': ['lifetime', 'stickers'],
     'redis': ['host', 'port', 'db'],
     'db': []
 }

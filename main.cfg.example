@@ -14,7 +14,7 @@ all=.!?;()\-—"[]{}«»/*&^#$
 [logging]
 level=INFO
 
-[links]
+[media_checker]
 lifetime=28800.0
 stickers=BQADAgADGwEAAjbsGwVVGLVNyOWfuwI
 
@@ -23,6 +23,8 @@ mode=polling
 host=
 port=
 url=
+key=
+cert=
 
 [redis]
 host=
