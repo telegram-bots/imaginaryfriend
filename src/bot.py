@@ -29,7 +29,7 @@ class Bot:
                                                    reply_generator=ReplyGenerator(),
                                                    media_checker=MediaUniquenessChecker(redis),
                                                    chance_manager=chance_manager))
-        self.dispatcher.add_handler(CommandHandler(chance_manager=chance_manager))
+        self.dispatcher.add_handler(CommandHandler())
         self.dispatcher.add_handler(StatusHandler(chat_purge_queue=ChatPurgeQueue(self.updater.job_queue, redis)))
 
         if config['updates']['mode'] == 'polling':
