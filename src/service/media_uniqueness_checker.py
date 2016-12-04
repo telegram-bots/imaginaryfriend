@@ -28,7 +28,7 @@ class MediaUniquenessChecker:
         return any(x == 0 for x in pipe.execute())
 
     def __extract_media(self, message):
-        links = []
+        media = []
 
         def prettify(url):
             if not url.startswith('http://') and not url.startswith('https://'):
@@ -40,6 +40,8 @@ class MediaUniquenessChecker:
 
         for entity in filter(lambda e: e.type == 'url', message.message.entities):
             link = prettify(message.text[entity.offset:entity.length + entity.offset])
-            links.append(link)
+            media.append(link)
 
-        return links
+        media += list(map(lambda p: p.file_id, getattr(message.message, 'photo', [])))
+
+        return media

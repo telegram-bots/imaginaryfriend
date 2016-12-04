@@ -13,7 +13,7 @@ class MessageHandler(ParentHandler):
 
     def __init__(self, data_learner, reply_generator, media_checker, chance_manager):
         super(MessageHandler, self).__init__(
-            Filters.text | Filters.sticker,
+            Filters.text | Filters.sticker | Filters.photo,
             self.handle)
 
         self.data_learner = data_learner
