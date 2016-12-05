@@ -1,12 +1,10 @@
-from src.config import config
+from src.config import config, redis
 
 
 class ChanceManager:
+    redis = redis
     key = "chance:{}"
     default_chance = config.getint('bot', 'default_chance')
-
-    def __init__(self, redis):
-        self.redis = redis
 
     def get_chance(self, chat_id):
         result = self.redis.instance().get(self.key.format(chat_id))

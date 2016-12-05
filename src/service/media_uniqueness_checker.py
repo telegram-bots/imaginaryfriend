@@ -1,14 +1,12 @@
 from datetime import datetime, timedelta
-from src.config import config
+from src.config import config, redis
 from urllib.parse import urlparse
 
 
 class MediaUniquenessChecker:
-    lifetime = timedelta(seconds=config.getfloat('media_checker', 'lifetime'))
+    redis = redis
     key = "media_checker:{}"
-
-    def __init__(self, redis):
-        self.redis = redis
+    lifetime = timedelta(seconds=config.getfloat('media_checker', 'lifetime'))
 
     def check(self, message):
         """Returns True if at least one media entity was already in this chat

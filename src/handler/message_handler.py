@@ -1,25 +1,24 @@
 import logging
 
 from random import choice
-from src.config import config
+from src.config import config, data_learner, reply_generator, media_checker, chance_manager
 from telegram.ext import MessageHandler as ParentHandler, Filters
 from telegram import ChatAction
 from src.domain.message import Message
 
 
 class MessageHandler(ParentHandler):
+    data_learner = data_learner
+    reply_generator = reply_generator
+    media_checker = media_checker
+    chance_manager = chance_manager
     spam_stickers = config.getlist('bot', 'spam_stickers')
     media_checker_stickers = config.getlist('media_checker', 'stickers')
 
-    def __init__(self, data_learner, reply_generator, media_checker, chance_manager):
+    def __init__(self):
         super(MessageHandler, self).__init__(
             Filters.text | Filters.sticker | Filters.photo,
             self.handle)
-
-        self.data_learner = data_learner
-        self.reply_generator = reply_generator
-        self.media_checker = media_checker
-        self.chance_manager = chance_manager
 
     def handle(self, bot, update):
         chance = self.chance_manager.get_chance(update.message.chat.id)

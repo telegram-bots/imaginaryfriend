@@ -1,15 +1,13 @@
 from .base import Base
+from src.config import chance_manager
 
 
 class SetChance(Base):
     name = 'set_chance'
-    chance_manager = None
+    chance_manager = chance_manager
 
     @staticmethod
     def execute(bot, command):
-        SetChance.reply(bot, command, 'Command currently disabled')
-        return
-
         try:
             chance = int(command.args[0])
 

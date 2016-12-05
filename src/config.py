@@ -1,5 +1,8 @@
 import configparser
+from src.redis_c import Redis
+from src.service import *
 
+# Config
 sections = {
     'bot': ['token', 'name', 'anchors', 'messages', 'purge_interval', 'default_chance', 'spam_stickers'],
     'grammar': ['end_sentence', 'all'],
@@ -25,3 +28,12 @@ for section, options in sections.items():
     for option in options:
         if not config.has_option(section, option):
             raise ValueError("Config is not valid! Option '{}' in section '{}' is missing!".format(option, section))
+
+
+# IOC
+redis = Redis(config)
+chance_manager = ChanceManager()
+media_checker = MediaUniquenessChecker()
+data_learner = DataLearner()
+reply_generator = ReplyGenerator()
+chat_purge_queue = ChatPurgeQueue()

@@ -6,9 +6,6 @@ from src.entity.pair import Pair
 
 
 class ReplyGenerator:
-    def __init__(self):
-        pass
-
     def generate(self, message):
         result = self.generate_story(message, message.words, random.randint(0, 2) + 1)
 

@@ -5,19 +5,22 @@ from datetime import datetime, timedelta
 from telegram.ext import Job
 from src.entity.reply import Reply
 from src.entity.pair import Pair
-from src.config import config
+from src.config import config, redis
 
 
 class ChatPurgeQueue:
+    redis = redis
+    queue = None
     jobs = {}
     default_interval = config.getfloat('bot', 'purge_interval')
     key = 'purge_queue'
 
-    def __init__(self, queue, redis):
+    def instance(self, queue):
         self.queue = queue
-        self.redis = redis
 
         self.__load_existing_jobs()
+
+        return self
 
     def add(self, chat_id, interval=default_interval):
         scheduled_at = datetime.now() + timedelta(seconds=interval)

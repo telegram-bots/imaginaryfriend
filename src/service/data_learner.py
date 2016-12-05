@@ -5,9 +5,6 @@ from src.entity.pair import Pair
 
 
 class DataLearner:
-    def __init__(self):
-        pass
-
     def learn(self, message):
         self.__write_new_unique_words(message.words)
 
