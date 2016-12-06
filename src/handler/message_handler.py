@@ -69,7 +69,9 @@ class MessageHandler(ParentHandler):
                              text=text)
 
     def __process_sticker(self, bot, message):
-        if message.should_answer():
+        if message.has_anchors() \
+                or message.is_private() \
+                or message.is_reply_to_bot():
             logging.debug("[Chat %s %s spam_sticker]" %
                           (message.chat_type,
                            message.chat_id))
