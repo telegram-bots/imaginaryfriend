@@ -4,9 +4,7 @@ from src.handler.commands.help import Help
 from src.handler.commands.ping import Ping
 from src.handler.commands.get_stats import GetStats
 from src.handler.commands.moderate import Moderate
-from src.handler.commands.get_chance import GetChance
-from src.handler.commands.set_chance import SetChance
-
+from src.handler.commands.chance import Chance
 
 commands = {}
 for clazz in Base.__subclasses__():
