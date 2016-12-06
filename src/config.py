@@ -1,8 +1,6 @@
-import configparser
-from src.redis_c import Redis
-from src.service import *
-
 # Config
+import configparser
+
 sections = {
     'bot': ['token', 'name', 'anchors', 'messages', 'purge_interval', 'default_chance', 'spam_stickers'],
     'grammar': ['end_sentence', 'all'],
@@ -31,7 +29,10 @@ for section, options in sections.items():
 
 
 # IOC
+from src.redis_c import Redis
 redis = Redis(config)
+
+from src.service import *
 chance_manager = ChanceManager()
 media_checker = MediaUniquenessChecker()
 data_learner = DataLearner()

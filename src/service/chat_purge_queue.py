@@ -9,11 +9,12 @@ from src.config import config, redis
 
 
 class ChatPurgeQueue:
-    redis = redis
-    queue = None
-    jobs = {}
-    default_interval = config.getfloat('bot', 'purge_interval')
-    key = 'purge_queue'
+    def __init__(self):
+        self.redis = redis
+        self.default_interval = config.getfloat('bot', 'purge_interval')
+        self.queue = None
+        self.jobs = {}
+        self.key = 'purge_queue'
 
     def instance(self, queue):
         self.queue = queue
@@ -22,7 +23,8 @@ class ChatPurgeQueue:
 
         return self
 
-    def add(self, chat_id, interval=default_interval):
+    def add(self, chat_id, interval=None):
+        interval = interval if interval is not None else self.default_interval
         scheduled_at = datetime.now() + timedelta(seconds=interval)
 
         logging.info("Added chat #%d to purge queue, scheduled to run at %s" %
@@ -64,7 +66,7 @@ class ChatPurgeQueue:
 
             self.add(chat_id=job['chat_id'], interval=interval)
 
-    def __make_purge_job(self, chat_id, interval=default_interval):
+    def __make_purge_job(self, chat_id, interval):
         return Job(self.__purge_callback, interval, repeat=False, context=chat_id)
 
     def __purge_callback(self, bot, job):

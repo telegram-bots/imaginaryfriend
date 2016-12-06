@@ -3,9 +3,7 @@ import logging
 from telegram.ext import Updater
 
 from src.config import config, chat_purge_queue
-from src.handler.command_handler import CommandHandler
-from src.handler.message_handler import MessageHandler
-from src.handler.status_handler import StatusHandler
+from src.handler import *
 
 
 class Bot:

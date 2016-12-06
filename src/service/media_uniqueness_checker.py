@@ -4,9 +4,10 @@ from urllib.parse import urlparse
 
 
 class MediaUniquenessChecker:
-    redis = redis
-    key = "media_checker:{}"
-    lifetime = timedelta(seconds=config.getfloat('media_checker', 'lifetime'))
+    def __init__(self):
+        self.redis = redis
+        self.key = "media_checker:{}"
+        self.lifetime = timedelta(seconds=config.getfloat('media_checker', 'lifetime'))
 
     def check(self, message):
         """Returns True if at least one media entity was already in this chat
