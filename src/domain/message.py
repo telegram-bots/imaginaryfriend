@@ -28,11 +28,6 @@ class Message(AbstractEntity):
         """
         return self.message.sticker is not None
 
-    def is_editing(self):
-        """Returns True if the message was edited.
-        """
-        return self.message.edit_date is not None
-
     def has_entities(self):
         """Returns True if the message has entities (attachments).
         """
@@ -43,11 +38,6 @@ class Message(AbstractEntity):
         """
         anchors = config.getlist('bot', 'anchors')
         return self.has_text() and any(a in self.message.text.split(' ') for a in anchors)
-
-    def is_private(self):
-        """Returns True if the message is private.
-        """
-        return self.message.chat.type == 'private'
 
     def is_reply_to_bot(self):
         """Returns True if the message is a reply to bot.

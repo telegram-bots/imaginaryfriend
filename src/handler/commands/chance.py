@@ -8,6 +8,9 @@ class Chance(Base):
 
     @staticmethod
     def execute(bot, command):
+        if command.is_private():
+            return Chance.reply(bot, command, 'Command disabled for private chats')
+
         try:
             new_chance = int(command.args[0])
 
