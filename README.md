@@ -46,6 +46,8 @@ ImaginaryFriend can:
 * `/get_stats`: get information on how many pairs are known by ImaginaryFriend,
 * `/chance n`: set the probability that ImaginaryFriend would reply to a random message (must be in range 1-50, default: 5),
 * `/сhance`: get current probability that ImaginaryFriend would reply to a message,
+* `/moderate word`: -
+* `/moderate word_id`: -
 * `/meow`, `/woof`, `/borscht`, `/boobs`, `/butts`: make ImaginaryFriend send a picture.
 
 ## Installation and Setup

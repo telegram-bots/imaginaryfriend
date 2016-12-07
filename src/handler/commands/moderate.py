@@ -1,6 +1,7 @@
 from src.entity.pair import Pair
 from src.entity.reply import Reply
 from src.entity.word import Word
+from src.utils import safe_cast
 from .base import Base
 
 
@@ -10,17 +11,20 @@ class Moderate(Base):
     @staticmethod
     def execute(bot, command):
         try:
-            if not command.chat_type == 'private' and not Moderate.is_admin(bot, command):
+            if not command.is_private() and not Moderate.is_admin(bot, command):
                 return Moderate.reply(bot, command, 'You don\'t have admin privileges!')
 
-            if len(command.args) == 2:
-                Moderate.remove_word(command.chat_id, command.args[1])
-            else:
+            if len(command.args) == 0:
+                raise IndexError
+
+            if safe_cast(command.args[0], int) is None:
                 Moderate.reply(bot, command, Moderate.find_similar_words(command.chat_id, command.args[0]))
+            else:
+                Moderate.remove_word(command.chat_id, int(command.args[0]))
         except (IndexError, ValueError):
             Moderate.reply(bot, command, """Usage:
 /moderate <word> for search
-/moderate <word> <word_id> for deletion""")
+/moderate <word_id> for deletion""")
 
     @staticmethod
     def is_admin(bot, entity):
@@ -52,7 +56,7 @@ class Moderate(Base):
     def __formatted_view(words):
         result = []
         for k, v in words.items():
-            result.append("- %s : %d" % (v, k))
+            result.append("%s : %d" % (v, k))
 
         return '\n'.join(result)
 
@@ -66,8 +70,12 @@ class Moderate(Base):
             .get()
 
     @staticmethod
+    def __prepare_word(word):
+        return word.strip("'\"")
+
+    @staticmethod
     def __find_chat_words(chat_id, search_word):
-        found_words = Word.where('word', 'like', search_word + '%') \
+        found_words = Word.where('word', 'like', Moderate.__prepare_word(search_word) + '%') \
             .order_by('word', 'asc') \
             .limit(10) \
             .lists('word', 'id')
