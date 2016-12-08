@@ -1,21 +1,22 @@
 import random
+import re
 from .abstract_entity import AbstractEntity
 from src.utils import deep_get_attr
 from src.config import config
 
 
 class Message(AbstractEntity):
-    def __init__(self, chat, message):
-        super(Message, self).__init__(chat=chat, message=message)
+    def __init__(self, chance, message):
+        super(Message, self).__init__(message)
 
-        self.text = message.text
-        self._words = None
+        self.chance = chance
 
-    @property
-    def words(self):
-        if self._words is None:
-            self._words = [] if not self.has_text() else self.__get_words()
-        return self._words
+        if self.has_text():
+            self.text = message.text
+            self.words = self.__get_words()
+        else:
+            self.text = ''
+            self.words = []
 
     def has_text(self):
         """Returns True if the message has text.
@@ -27,11 +28,6 @@ class Message(AbstractEntity):
         """
         return self.message.sticker is not None
 
-    def is_editing(self):
-        """Returns True if the message was edited.
-        """
-        return self.message.edit_date is not None
-
     def has_entities(self):
         """Returns True if the message has entities (attachments).
         """
@@ -40,13 +36,8 @@ class Message(AbstractEntity):
     def has_anchors(self):
         """Returns True if the message contains at least one anchor from anchors config.
         """
-        anchors = config['bot']['anchors'].split(',')
+        anchors = config.getlist('bot', 'anchors')
         return self.has_text() and any(a in self.message.text.split(' ') for a in anchors)
-
-    def is_private(self):
-        """Returns True if the message is private.
-        """
-        return self.message.chat.type == 'private'
 
     def is_reply_to_bot(self):
         """Returns True if the message is a reply to bot.
@@ -58,21 +49,32 @@ class Message(AbstractEntity):
     def is_random_answer(self):
         """Returns True if reply chance for this chat is high enough
         """
-        return random.randint(0, 100) < getattr(self.chat, 'random_chance', config['bot']['default_chance'])
+        return random.randint(0, 100) < self.chance
+
+    def should_answer(self):
+        return self.has_anchors() \
+            or self.is_private() \
+            or self.is_reply_to_bot() \
+            or self.is_random_answer()
 
     def __get_words(self):
-        symbols = list(self.text)
+        symbols = list(re.sub('\s', ' ', self.text))
 
         def prettify(word):
             lowercase_word = word.lower().strip()
             last_symbol = lowercase_word[-1:]
             if last_symbol not in config['grammar']['end_sentence']:
                 last_symbol = ''
-            pretty_word = lowercase_word.strip(config['grammar']['all']) + last_symbol
+            pretty_word = lowercase_word.strip(config['grammar']['all'])
 
-            return pretty_word if pretty_word != '' and len(pretty_word) > 2 else lowercase_word
+            if pretty_word != '' and len(pretty_word) > 2:
+                return pretty_word + last_symbol
+            elif lowercase_word in config['grammar']['all']:
+                return None
+
+            return lowercase_word
 
         for entity in self.message.entities:
-            symbols[entity.offset:entity.length] = ' ' * entity.length
+            symbols[entity.offset:entity.length + entity.offset] = ' ' * entity.length
 
         return list(filter(None, map(prettify, ''.join(symbols).split(' '))))

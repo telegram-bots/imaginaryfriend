@@ -27,3 +27,10 @@ def deep_get_attr(obj, attr, default=None):
         except AttributeError:
             return default
     return obj
+
+
+def safe_cast(val, to_type, default=None):
+    try:
+        return to_type(val)
+    except (ValueError, TypeError):
+        return default

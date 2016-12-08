@@ -1,34 +1,30 @@
 import logging
+import json
 
 from datetime import datetime, timedelta
 from telegram.ext import Job
-from src.entity.chat import Chat
 from src.entity.reply import Reply
-from src.entity.job import Job as JobEntity
-from src.config import config
+from src.entity.pair import Pair
+from src.config import config, redis
 
 
 class ChatPurgeQueue:
-    queue = None
-    jobs = {}
-    default_interval = float(config['bot']['purge_interval'])
-    job_type = 'purge'
+    def __init__(self):
+        self.redis = redis
+        self.default_interval = config.getfloat('bot', 'purge_interval')
+        self.queue = None
+        self.jobs = {}
+        self.key = 'purge_queue'
 
-    # TODO. Должно взять все задачи из таблицы и проинициализировать их
-    def __init__(self, queue):
+    def instance(self, queue):
         self.queue = queue
-        existing_jobs = JobEntity.where('type', self.job_type).get().all()
 
-        for job in existing_jobs:
-            current_datetime = datetime.now()
-            if current_datetime >= job.execute_at:
-                interval = 60
-            else:
-                interval = (job.execute_at - current_datetime).total_seconds()
+        self.__load_existing_jobs()
 
-            self.add(chat_id=job.chat_id, interval=interval, write_to_db=False)
+        return self
 
-    def add(self, chat_id, interval=default_interval, write_to_db=True):
+    def add(self, chat_id, interval=None):
+        interval = interval if interval is not None else self.default_interval
         scheduled_at = datetime.now() + timedelta(seconds=interval)
 
         logging.info("Added chat #%d to purge queue, scheduled to run at %s" %
@@ -38,11 +34,11 @@ class ChatPurgeQueue:
         self.jobs[chat_id] = job
         self.queue.put(job)
 
-        if write_to_db:
-            JobEntity.create(chat_id=chat_id,
-                             type=self.job_type,
-                             repeat=False,
-                             execute_at=scheduled_at)
+        self.redis.instance().hset(
+            self.key,
+            chat_id,
+            json.dumps({'chat_id': chat_id, 'execute_at': scheduled_at.timestamp()})
+        )
 
     def remove(self, chat_id):
         if chat_id not in self.jobs:
@@ -52,20 +48,34 @@ class ChatPurgeQueue:
 
         job = self.jobs.pop(chat_id)
         job.schedule_removal()
-        JobEntity.where('chat_id', chat_id).where('type', self.job_type).delete()
 
-    def __make_purge_job(self, chat_id, interval=default_interval):
+        self.redis.instance().hdel(self.key, chat_id)
+
+    def __load_existing_jobs(self):
+        existing_jobs = map(lambda j: json.loads(j.decode('utf-8')),
+                            self.redis.instance().hgetall(self.key).values())
+
+        for job in existing_jobs:
+            job_datetime = datetime.fromtimestamp(job['execute_at'])
+            current_datetime = datetime.now()
+
+            if current_datetime >= job_datetime:
+                interval = 60
+            else:
+                interval = (job_datetime - current_datetime).total_seconds()
+
+            self.add(chat_id=job['chat_id'], interval=interval)
+
+    def __make_purge_job(self, chat_id, interval):
         return Job(self.__purge_callback, interval, repeat=False, context=chat_id)
 
     def __purge_callback(self, bot, job):
         chat_id = job.context
+
         logging.info("Removing chat #%d data..." % chat_id)
 
-        chat = Chat.find(chat_id)
-        if chat is not None:
-            for pairs in chat.pairs().select('id').chunk(500):
-                Reply.where_in('pair_id', pairs.pluck('id').all()).delete()
-            chat.pairs().delete()
-            chat.delete()
+        for pairs in Pair.where('chat_id', chat_id).select('id').chunk(500):
+            Reply.where_in('pair_id', pairs.pluck('id').all()).delete()
+        Pair.where('chat_id', chat_id).delete()
 
-        JobEntity.where('chat_id', chat_id).where('type', self.job_type).delete()
+        self.redis.instance().hdel(self.key, chat_id)

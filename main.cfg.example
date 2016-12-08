@@ -5,13 +5,31 @@ anchors=
 messages=
 purge_interval=43200.0
 default_chance=5
+spam_stickers=BQADAgADSAIAAkcGQwU-G-9SZUDTWAI
 
 [grammar]
 end_sentence=.....!!?
-all=.!?,;:()\-—"
+all=.!?;()\-—"[]{}«»/*&^#$
 
 [logging]
 level=INFO
+
+[media_checker]
+lifetime=28800.0
+stickers=BQADAgADGwEAAjbsGwVVGLVNyOWfuwI
+
+[updates]
+mode=polling
+host=
+port=
+url=
+key=
+cert=
+
+[redis]
+host=
+port=
+db=
 
 [db]
 driver=

@@ -1,60 +1,81 @@
 import logging
 
+from random import choice
+from src.config import config, data_learner, reply_generator, media_checker, chance_manager
 from telegram.ext import MessageHandler as ParentHandler, Filters
 from telegram import ChatAction
-
 from src.domain.message import Message
-from src.entity.chat import Chat
 
 
 class MessageHandler(ParentHandler):
-    def __init__(self, message_sender, data_learner, reply_generator):
+    def __init__(self):
         super(MessageHandler, self).__init__(
-            Filters.text | Filters.sticker,
+            Filters.text | Filters.sticker | Filters.photo,
             self.handle)
-
-        self.message_sender = message_sender
         self.data_learner = data_learner
         self.reply_generator = reply_generator
+        self.media_checker = media_checker
+        self.chance_manager = chance_manager
+        self.spam_stickers = config.getlist('bot', 'spam_stickers')
+        self.media_checker_stickers = config.getlist('media_checker', 'stickers')
 
     def handle(self, bot, update):
-        chat = Chat.get_chat(update.message)
-        message = Message(chat=chat, message=update.message)
+        chance = self.chance_manager.get_chance(update.message.chat.id)
+        message = Message(chance=chance, message=update.message)
 
-        if message.has_text():
-            logging.debug("[Chat %s %s bare_text] %s" %
-                          (message.chat.chat_type,
-                           message.chat.telegram_id,
-                           message.text))
+        self.__check_media_uniqueness(bot, message)
 
         if message.has_text() and not message.is_editing():
-            return self.__process_message(message)
+            self.__process_message(bot, message)
         elif message.is_sticker():
-            return self.__process_sticker(message)
+            self.__process_sticker(bot, message)
 
-    def __process_message(self, message):
-        should_answer = message.has_anchors() \
-                or message.is_private() \
-                or message.is_reply_to_bot() \
-                or message.is_random_answer()
+    def __check_media_uniqueness(self, bot, message):
+        if not message.is_private()\
+                and message.has_entities()\
+                and self.media_checker.check(message):
+            logging.debug("[Chat %s %s not unique media]" %
+                          (message.chat_type,
+                           message.chat_id))
+
+            bot.send_sticker(chat_id=message.chat_id,
+                             reply_to_message_id=message.message.message_id,
+                             sticker=choice(self.media_checker_stickers))
+
+    def __process_message(self, bot, message):
+        logging.debug("[Chat %s %s message length] %s" %
+                      (message.chat_type,
+                       message.chat_id,
+                       len(message.text)))
+
+        should_answer = message.should_answer()
 
         if should_answer:
-            self.message_sender.send_action(entity=message, action=ChatAction.TYPING)
+            bot.send_chat_action(chat_id=message.chat_id, action=ChatAction.TYPING)
 
         self.data_learner.learn(message)
 
         if should_answer:
             text = self.reply_generator.generate(message)
+            reply_id = None if not message.is_reply_to_bot() else message.message.message_id
 
-            if message.is_reply_to_bot():
-                self.message_sender.reply(message, text)
-            else:
-                self.message_sender.answer(message, text)
+            logging.debug("[Chat %s %s answer/reply] %s" %
+                          (message.chat_type,
+                           message.chat_id,
+                           text))
 
-    def __process_sticker(self, message):
+            bot.send_message(chat_id=message.chat_id,
+                             reply_to_message_id=reply_id,
+                             text=text)
+
+    def __process_sticker(self, bot, message):
         if message.has_anchors() \
                 or message.is_private() \
-                or message.is_reply_to_bot() \
-                or message.is_random_answer():
+                or message.is_reply_to_bot():
+            logging.debug("[Chat %s %s spam_sticker]" %
+                          (message.chat_type,
+                           message.chat_id))
 
-            self.message_sender.send_sticker(message, "BQADAgADSAIAAkcGQwU-G-9SZUDTWAI")
+            bot.send_sticker(chat_id=message.chat_id,
+                             reply_to_message_id=message.message.message_id,
+                             sticker=choice(self.spam_stickers))
