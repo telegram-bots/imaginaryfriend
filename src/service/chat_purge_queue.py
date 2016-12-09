@@ -3,8 +3,6 @@ import json
 
 from datetime import datetime, timedelta
 from telegram.ext import Job
-from src.entity.reply import Reply
-from src.entity.pair import Pair
 from src.config import config, redis
 
 
@@ -74,8 +72,8 @@ class ChatPurgeQueue:
 
         logging.info("Removing chat #%d data..." % chat_id)
 
-        for pairs in Pair.where('chat_id', chat_id).select('id').chunk(500):
-            Reply.where_in('pair_id', pairs.pluck('id').all()).delete()
-        Pair.where('chat_id', chat_id).delete()
+        # for pairs in Pair.where('chat_id', chat_id).select('id').chunk(500):
+        #     Reply.where_in('pair_id', pairs.pluck('id').all()).delete()
+        # Pair.where('chat_id', chat_id).delete()
 
         self.redis.instance().hdel(self.key, chat_id)

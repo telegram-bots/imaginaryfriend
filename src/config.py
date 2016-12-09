@@ -3,7 +3,7 @@ import configparser
 
 sections = {
     'bot': ['token', 'name', 'anchors', 'messages', 'purge_interval', 'default_chance', 'spam_stickers'],
-    'grammar': ['end_sentence', 'all'],
+    'grammar': ['chain_length', 'separator', 'stop_word', 'end_sentence', 'all'],
     'logging': ['level'],
     'updates': ['mode'],
     'media_checker': ['lifetime', 'stickers'],
@@ -35,6 +35,7 @@ redis = Redis(config)
 from src.service import *
 chance_manager = ChanceManager()
 media_checker = MediaUniquenessChecker()
+tokenizer = Tokenizer()
 data_learner = DataLearner()
 reply_generator = ReplyGenerator()
 chat_purge_queue = ChatPurgeQueue()

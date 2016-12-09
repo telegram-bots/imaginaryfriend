@@ -13,10 +13,8 @@ class Message(AbstractEntity):
 
         if self.has_text():
             self.text = message.text
-            self.words = self.__get_words()
         else:
             self.text = ''
-            self.words = []
 
     def has_text(self):
         """Returns True if the message has text.
@@ -56,25 +54,3 @@ class Message(AbstractEntity):
             or self.is_private() \
             or self.is_reply_to_bot() \
             or self.is_random_answer()
-
-    def __get_words(self):
-        symbols = list(re.sub('\s', ' ', self.text))
-
-        def prettify(word):
-            lowercase_word = word.lower().strip()
-            last_symbol = lowercase_word[-1:]
-            if last_symbol not in config['grammar']['end_sentence']:
-                last_symbol = ''
-            pretty_word = lowercase_word.strip(config['grammar']['all'])
-
-            if pretty_word != '' and len(pretty_word) > 2:
-                return pretty_word + last_symbol
-            elif lowercase_word in config['grammar']['all']:
-                return None
-
-            return lowercase_word
-
-        for entity in self.message.entities:
-            symbols[entity.offset:entity.length + entity.offset] = ' ' * entity.length
-
-        return list(filter(None, map(prettify, ''.join(symbols).split(' '))))

@@ -7,12 +7,17 @@ purge_interval=43200.0
 default_chance=5
 spam_stickers=BQADAgADSAIAAkcGQwU-G-9SZUDTWAI
 
-[grammar]
-end_sentence=.....!!?
-all=.!?;()\-—"[]{}«»/*&^#$
-
 [logging]
 level=INFO
+
+[grammar]
+chain_length=2
+separator=\x02
+stop_word='\x00'
+max_words=30
+max_messages=5
+end_sentence=.....!!?
+all=.!?;()\-—"[]{}«»/*&^#$
 
 [media_checker]
 lifetime=28800.0

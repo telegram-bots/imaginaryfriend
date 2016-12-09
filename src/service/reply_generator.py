@@ -1,66 +1,56 @@
-import random
-from src.config import config
+from src.config import config, redis, tokenizer
 from src.utils import strings_has_equal_letters, capitalize, random_element
-from src.entity.word import Word
-from src.entity.pair import Pair
 
 
 class ReplyGenerator:
+    def __init__(self):
+        self.redis = redis
+        self.tokenizer = tokenizer
+        self.max_words = config.getint('grammar', 'max_words')
+        self.max_messages = config.getint('grammar', 'max_messages')
+
     def generate(self, message):
-        result = self.generate_story(message, message.words, random.randint(0, 2) + 1)
+        messages = []
+
+        words = self.tokenizer.extract_words(message)
+        for trigram in self.tokenizer.split_to_trigrams(words):
+            pair = trigram[:-1]
+
+            best_message = ''
+            for _ in range(self.max_messages):
+                generated = self.__generate_sentence(pair)
+                if len(generated) > len(best_message):
+                    best_message = generated
+
+            if best_message:
+                messages.append(best_message)
+
+        result = random_element(messages) if len(messages) else ''
 
         if strings_has_equal_letters(result, ''.join(message.words)):
             return ''
 
         return result
 
-    def generate_story(self, message, words, sentences_count):
-        word_ids = Word.where_in('word', words).lists('id').all()
+    def __generate_sentence(self, seed):
+        key = seed
+        gen_words = []
+        redis = self.redis.instance()
 
-        return ' '.join([self.__generate_sentence(message, word_ids) for _ in range(sentences_count)])
-
-    def __generate_sentence(self, message, word_ids):
-        sentences = []
-        safety_counter = 50
-        first_word_id = None
-        second_word_id_list = word_ids
-
-        while safety_counter > 0:
-            pair = Pair.get_random_pair(chat_id=message.chat_id,
-                                        first_id=first_word_id,
-                                        second_id_list=second_word_id_list)
-            replies = getattr(pair, 'replies', [])
-            safety_counter -= 1
-
-            if pair is None or len(replies) == 0:
-                continue
-
-            reply = random.choice(replies.all())
-            first_word_id = pair.second.id
-
-            # FIXME. WARNING! Do not try to fix, it's magic, i have no clue why
-            try:
-                second_word_id_list = [reply.word.id]
-            except AttributeError:
-                second_word_id_list = None
-
-            if len(sentences) == 0:
-                sentences.append(capitalize(pair.second.word))
-                word_ids.remove(pair.second.id)
-
-            # FIXME. WARNING! Do not try to fix, it's magic, i have no clue why
-            try:
-                reply_word = reply.word.word
-            except AttributeError:
-                reply_word = None
-
-            if reply_word is not None:
-                sentences.append(reply_word)
+        for _ in range(self.max_words):
+            if len(gen_words):
+                gen_words.append(key[0])
             else:
+                gen_words.append(capitalize(key[0]))
+
+            next_word = redis.srandmember(self.tokenizer.to_key(key))
+            if not next_word:
                 break
 
-        sentence = ' '.join(sentences).strip()
-        if sentence[-1:] not in config['grammar']['end_sentence']:
-            sentence += random_element(list(config['grammar']['end_sentence']))
+            key = self.tokenizer.separator.join(key[1:] + [next_word])
 
-        return sentence
+        sentence = ' '.join(gen_words).strip()
+        if sentence[-1:] not in self.tokenizer.end_sentence:
+            sentence += self.tokenizer.random_end_sentence_token()
+
+        return ' '.join(gen_words)
