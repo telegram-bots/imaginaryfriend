@@ -10,6 +10,7 @@ class Message(AbstractEntity):
         super(Message, self).__init__(message)
 
         self.chance = chance
+        self.entities = message.entities
 
         if self.has_text():
             self.text = message.text
@@ -29,7 +30,7 @@ class Message(AbstractEntity):
     def has_entities(self):
         """Returns True if the message has entities (attachments).
         """
-        return self.message.entities is not None
+        return self.entities is not None
 
     def has_anchors(self):
         """Returns True if the message contains at least one anchor from anchors config.

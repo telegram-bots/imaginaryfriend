@@ -1,9 +1,9 @@
-from src.config import config, redis, tokenizer
+from src.config import config, redis
 from src.utils import strings_has_equal_letters, capitalize, random_element
 
 
 class ReplyGenerator:
-    def __init__(self):
+    def __init__(self, tokenizer):
         self.redis = redis
         self.tokenizer = tokenizer
         self.max_words = config.getint('grammar', 'max_words')
@@ -18,7 +18,7 @@ class ReplyGenerator:
 
             best_message = ''
             for _ in range(self.max_messages):
-                generated = self.__generate_sentence(pair)
+                generated = self.__generate_sentence(message.chat_id, pair)
                 if len(generated) > len(best_message):
                     best_message = generated
 
@@ -27,30 +27,35 @@ class ReplyGenerator:
 
         result = random_element(messages) if len(messages) else ''
 
-        if strings_has_equal_letters(result, ''.join(message.words)):
+        if strings_has_equal_letters(result, ''.join(words)):
             return ''
 
         return result
 
-    def __generate_sentence(self, seed):
+    def __generate_sentence(self, chat_id, seed):
         key = seed
         gen_words = []
         redis = self.redis.instance()
 
         for _ in range(self.max_words):
-            if len(gen_words):
-                gen_words.append(key[0])
-            else:
-                gen_words.append(capitalize(key[0]))
+            words = key
 
-            next_word = redis.srandmember(self.tokenizer.to_key(key))
-            if not next_word:
+            if len(gen_words):
+                gen_words.append(words[0])
+            else:
+                gen_words.append(capitalize(words[0]))
+
+            next_word = redis.srandmember(self.tokenizer.to_key(chat_id=chat_id, pair=key))
+            if next_word is None:
+                break
+            next_word = next_word.decode("utf-8")
+            if next_word == self.tokenizer.stop_word:
                 break
 
-            key = self.tokenizer.separator.join(key[1:] + [next_word])
+            key = words[1:] + [next_word]
 
         sentence = ' '.join(gen_words).strip()
         if sentence[-1:] not in self.tokenizer.end_sentence:
             sentence += self.tokenizer.random_end_sentence_token()
 
-        return ' '.join(gen_words)
+        return sentence

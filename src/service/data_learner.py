@@ -1,8 +1,8 @@
-from src.config import redis, tokenizer
+from src.config import redis
 
 
 class DataLearner:
-    def __init__(self):
+    def __init__(self, tokenizer):
         self.redis = redis
         self.tokenizer = tokenizer
 

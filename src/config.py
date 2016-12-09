@@ -32,10 +32,12 @@ for section, options in sections.items():
 from src.redis_c import Redis
 redis = Redis(config)
 
+from src.service.tokenizer import Tokenizer
+tokenz = Tokenizer()
+
 from src.service import *
+data_learner = DataLearner(tokenz)
+reply_generator = ReplyGenerator(tokenz)
 chance_manager = ChanceManager()
 media_checker = MediaUniquenessChecker()
-tokenizer = Tokenizer()
-data_learner = DataLearner()
-reply_generator = ReplyGenerator()
 chat_purge_queue = ChatPurgeQueue()
