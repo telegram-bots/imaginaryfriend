@@ -12,11 +12,18 @@ class Tokenizer:
         self.end_sentence = config['grammar']['end_sentence']
         self.garbage_tokens = config['grammar']['all']
 
-    def split_to_trigrams(self, words):
-        if len(words) <= self.chain_length:
+    def split_to_trigrams(self, src_words):
+        if len(src_words) <= self.chain_length:
             yield from ()
 
-        words.append(self.stop_word)
+        words = [self.stop_word]
+        for word in src_words:
+            words.append(word)
+            if word[-1] in self.end_sentence:
+                words.append(self.stop_word)
+        if words[-1] != self.stop_word:
+            words.append(self.stop_word)
+
         for i in range(len(words) - self.chain_length):
             yield words[i:i + self.chain_length + 1]
 
