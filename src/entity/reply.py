@@ -7,6 +7,9 @@ import src.entity.word
 
 
 class Reply(Model):
+    """
+    Reply entity, represents replies table.
+    """
     __fillable__ = ['pair_id', 'word_id', 'count']
     __timestamps__ = False
 

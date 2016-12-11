@@ -7,6 +7,9 @@ from src.handler import *
 
 
 class Bot:
+    """
+    Main initializer and dispatcher of messages
+    """
     def __init__(self):
         self.updater = Updater(token=config['bot']['token'])
         self.dispatcher = self.updater.dispatcher

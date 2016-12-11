@@ -6,6 +6,10 @@ from src.entity.pair import Pair
 
 class DataLearner:
     def learn(self, message):
+        """
+        Split message to trigrams and write to DB
+        :param message: Message
+        """
         self.__write_new_unique_words(message.words)
 
         words = self.__normalize_words(message.words)

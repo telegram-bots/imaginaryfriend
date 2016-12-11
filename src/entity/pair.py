@@ -8,6 +8,9 @@ import src.entity.word
 
 
 class Pair(Model):
+    """
+    Pair entity, represents pairs table.
+    """
     __fillable__ = ['chat_id', 'first_id', 'second_id']
     __timestamps__ = ['created_at']
 

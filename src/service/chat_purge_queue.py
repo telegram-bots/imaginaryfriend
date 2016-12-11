@@ -9,6 +9,9 @@ from src.config import config, redis
 
 
 class ChatPurgeQueue:
+    """
+    Scheduling and execution of chat purge
+    """
     def __init__(self):
         self.redis = redis
         self.default_interval = config.getfloat('bot', 'purge_interval')
@@ -24,6 +27,11 @@ class ChatPurgeQueue:
         return self
 
     def add(self, chat_id, interval=None):
+        """
+        Schedules purge of chat data
+        :param chat_id: ID of chat
+        :param interval: Interval in seconds
+        """
         interval = interval if interval is not None else self.default_interval
         scheduled_at = datetime.now() + timedelta(seconds=interval)
 
@@ -41,6 +49,10 @@ class ChatPurgeQueue:
         )
 
     def remove(self, chat_id):
+        """
+        Removes scheduled purge job from queue
+        :param chat_id: ID of chat
+        """
         if chat_id not in self.jobs:
             return
 

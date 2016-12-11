@@ -6,15 +6,23 @@ from src.entity.pair import Pair
 
 
 class ReplyGenerator:
+    """
+    Handles generation of responses for user message
+    """
     def generate(self, message):
-        result = self.generate_story(message, message.words, random.randint(0, 2) + 1)
+        """
+        Generates response based on message words
+        :param message: Message
+        :return: Response or empty string, if generated response equals to user message
+        """
+        result = self.__generate_story(message, message.words, random.randint(0, 2) + 1)
 
         if strings_has_equal_letters(result, ''.join(message.words)):
             return ''
 
         return result
 
-    def generate_story(self, message, words, sentences_count):
+    def __generate_story(self, message, words, sentences_count):
         word_ids = Word.where_in('word', words).lists('id').all()
 
         return ' '.join([self.__generate_sentence(message, word_ids) for _ in range(sentences_count)])

@@ -4,6 +4,9 @@ from urllib.parse import urlparse
 
 
 class MediaUniquenessChecker:
+    """
+    Checks message links and photos for uniqueness
+    """
     def __init__(self):
         self.redis = redis
         self.key = "media_checker:{}"
