@@ -75,9 +75,10 @@ class Moderate(Base):
 
     @staticmethod
     def __find_chat_words(chat_id, search_word):
+        # NOTE. I'm too bored to fix this properly
         found_words = Word.where('word', 'like', Moderate.__prepare_word(search_word) + '%') \
             .order_by('word', 'asc') \
-            .limit(10) \
+            .limit(50) \
             .lists('word', 'id')
 
         if len(found_words) == 0:
@@ -90,6 +91,6 @@ class Moderate(Base):
             if pair.second_id in found_words:
                 to_keep.append(pair.second_id)
 
-        to_keep = set(to_keep)
+        to_keep = set(to_keep[:10])
 
         return dict((k, found_words[k]) for k in found_words if k in to_keep)
