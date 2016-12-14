@@ -5,7 +5,6 @@ from src.config import config
 
 class Tokenizer:
     def __init__(self):
-        self.key = 'trigrams:{}:{}'
         self.chain_length = config.getint('grammar', 'chain_length')
         self.separator = config['grammar']['separator']
         self.stop_word = config['grammar']['stop_word']
@@ -34,9 +33,6 @@ class Tokenizer:
             symbols[entity.offset:entity.length + entity.offset] = ' ' * entity.length
 
         return list(filter(None, map(self.__prettify, ''.join(symbols).split(' '))))
-
-    def to_key(self, chat_id, pair):
-        return self.key.format(chat_id, self.separator.join(pair))
 
     def random_end_sentence_token(self):
         return random_element(list(self.end_sentence))

@@ -35,9 +35,13 @@ redis = Redis(config)
 from src.service.tokenizer import Tokenizer
 tokenz = Tokenizer()
 
+from src.repository import *
+trigram_repository = TrigramRepository()
+chance_repository = ChanceRepository()
+media_repository = MediaRepository()
+
 from src.service import *
 data_learner = DataLearner(tokenz)
 reply_generator = ReplyGenerator(tokenz)
-chance_manager = ChanceManager()
 media_checker = MediaUniquenessChecker()
 chat_purge_queue = ChatPurgeQueue()

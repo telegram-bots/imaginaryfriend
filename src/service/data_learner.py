@@ -1,19 +1,13 @@
-from src.config import redis
+from src.config import trigram_repository
 
 
 class DataLearner:
     def __init__(self, tokenizer):
-        self.redis = redis
+        self.trigram_repository = trigram_repository
         self.tokenizer = tokenizer
 
     def learn(self, message):
-        pipe = self.redis.instance().pipeline()
-
         words = self.tokenizer.extract_words(message)
-        for trigram in self.tokenizer.split_to_trigrams(words):
-            key = self.tokenizer.to_key(message.chat_id, trigram[:-1])
-            last_word = trigram[-1]
+        trigrams = self.tokenizer.split_to_trigrams(words)
 
-            pipe.sadd(key, last_word)
-
-        pipe.execute()
+        self.trigram_repository.store(message.chat_id, trigrams)
