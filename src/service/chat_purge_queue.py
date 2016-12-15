@@ -3,7 +3,7 @@ import json
 
 from datetime import datetime, timedelta
 from telegram.ext import Job
-from src.config import config, redis
+from src.config import config, redis, encoding
 
 
 class ChatPurgeQueue:
@@ -50,7 +50,7 @@ class ChatPurgeQueue:
         self.redis.instance().hdel(self.key, chat_id)
 
     def __load_existing_jobs(self):
-        existing_jobs = map(lambda j: json.loads(j.decode('utf-8')),
+        existing_jobs = map(lambda j: json.loads(j.decode(encoding)),
                             self.redis.instance().hgetall(self.key).values())
 
         for job in existing_jobs:

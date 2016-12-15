@@ -1,4 +1,4 @@
-from src.config import config, redis
+from src.config import config, redis, encoding
 from src.utils import strings_has_equal_letters, capitalize, random_element
 
 
@@ -48,7 +48,7 @@ class ReplyGenerator:
             next_word = redis.srandmember(self.tokenizer.to_key(chat_id=chat_id, pair=key))
             if next_word is None:
                 break
-            next_word = next_word.decode("utf-8")
+            next_word = next_word.decode(encoding)
             if next_word == self.tokenizer.stop_word:
                 break
 

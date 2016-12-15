@@ -1,6 +1,8 @@
 # Config
 import configparser
 
+encoding = 'utf-8'
+
 sections = {
     'bot': ['token', 'name', 'anchors', 'messages', 'purge_interval', 'default_chance', 'spam_stickers'],
     'grammar': ['chain_length', 'separator', 'stop_word', 'end_sentence', 'all'],
@@ -18,7 +20,7 @@ def getlist(self, section, option, type=str):
 configparser.ConfigParser.getlist = getlist
 
 config = configparser.ConfigParser()
-config.read('./main.cfg', encoding='utf-8')
+config.read('./main.cfg', encoding=encoding)
 
 for section, options in sections.items():
     if not config.has_section(section):

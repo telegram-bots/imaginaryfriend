@@ -1,5 +1,5 @@
 from . import BaseRepository
-from src.config import redis
+from src.config import redis, encoding
 
 
 class RedisRepository(BaseRepository):
@@ -14,4 +14,4 @@ class RedisRepository(BaseRepository):
         if byte is None:
             return default
 
-        return int(byte.decode('utf-8'))
+        return int(byte.decode(encoding))
