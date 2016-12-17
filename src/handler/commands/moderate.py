@@ -91,6 +91,6 @@ class Moderate(Base):
             if pair.second_id in found_words:
                 to_keep.append(pair.second_id)
 
-        to_keep = set(to_keep[:10])
+        to_keep = list(set(to_keep))[:10]
 
         return dict((k, found_words[k]) for k in found_words if k in to_keep)
