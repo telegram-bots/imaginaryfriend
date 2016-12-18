@@ -41,6 +41,7 @@ from src.repository import *
 trigram_repository = TrigramRepository()
 chance_repository = ChanceRepository()
 media_repository = MediaRepository()
+job_repository = JobRepository()
 
 from src.service import *
 data_learner = DataLearner(tokenz)

@@ -44,7 +44,7 @@ class TrigramRepository(RedisRepository):
         :param chat_id: ID of chat
         """
         pattern = self.source(chat_id, '*')
-        self.__remove_by_pattern(pattern)
+        self.__remove_keys(pattern)
 
     def find_word(self, chat_id, similar_word):
         """
@@ -71,8 +71,8 @@ class TrigramRepository(RedisRepository):
         :param exact_word: Exact word match
         """
 
-        self.__remove_by_pattern(self.source(chat_id, exact_word + self.separator + '*'))
-        self.__remove_by_pattern(self.source(chat_id, '*' + self.separator + exact_word))
+        self.__remove_keys(self.source(chat_id, exact_word + self.separator + '*'))
+        self.__remove_keys(self.source(chat_id, '*' + self.separator + exact_word))
 
     def __remove_keys(self, pattern):
         """

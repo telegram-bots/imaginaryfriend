@@ -1,8 +1,9 @@
 from .base import Base
+from src.config import trigram_repository
 
 
 class Moderate(Base):
-    name = 'moderate'
+    aliases = ['mod_f', 'mod_d']
 
     @staticmethod
     def execute(bot, command):
@@ -13,23 +14,20 @@ class Moderate(Base):
             if len(command.args) == 0:
                 raise IndexError
 
-            Moderate.reply(bot, command, 'Command currently disabled.')
+            if command.name == 'mod_f':
+                words = trigram_repository.find_word(command.chat_id, command.args[0])
 
-            # if safe_cast(command.args[0], int) is None:
-            # Moderate.reply(bot, command, Moderate.find_similar_words(command.chat_id, command.args[0]))
-            # else:
-            # Moderate.remove_word(command.chat_id, int(command.args[0]))
+                Moderate.reply(bot, command, words)
+            elif command.name == 'mod_d':
+                trigram_repository.remove_word(command.chat_id, command.args[0])
         except (IndexError, ValueError):
             Moderate.reply(bot, command, """Usage:
-/moderate <word> for search
-/moderate <word_id> for deletion""")
+/mod_f <similar_word> for search
+/mod_d <exact_word> for deletion""")
 
     @staticmethod
     def is_admin(bot, entity):
         user_id = entity.message.from_user.id
-        admin_ids = list(map(
-            lambda member: member.user.id,
-            bot.get_chat_administrators(chat_id=entity.chat_id)
-        ))
+        admin_ids = list(map(lambda m: m.user.id, bot.get_chat_administrators(entity.chat_id)))
 
         return user_id in admin_ids
