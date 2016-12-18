@@ -15,7 +15,7 @@ class Moderate(Base):
                 raise IndexError
 
             if command.name == 'mod_f':
-                words = trigram_repository.find_word(command.chat_id, command.args[0])
+                words = '\n'.join(trigram_repository.find_word(command.chat_id, command.args[0]))
 
                 Moderate.reply(bot, command, words)
             elif command.name == 'mod_d':
