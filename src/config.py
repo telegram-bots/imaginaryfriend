@@ -6,7 +6,7 @@ sections = {
     'grammar': ['end_sentence', 'all'],
     'logging': ['level'],
     'updates': ['mode'],
-    'media_checker': ['lifetime', 'stickers'],
+    'media_checker': ['lifetime', 'messages'],
     'redis': ['host', 'port', 'db'],
     'db': []
 }

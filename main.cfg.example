@@ -16,7 +16,7 @@ level=INFO
 
 [media_checker]
 lifetime=28800.0
-stickers=BQADAgADGwEAAjbsGwVVGLVNyOWfuwI
+messages=[:||||||||||||:]
 
 [updates]
 mode=polling
