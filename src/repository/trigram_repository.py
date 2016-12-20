@@ -51,11 +51,12 @@ class TrigramRepository(RedisRepository):
         counter_key = self.counter_source.format(chat_id)
         self.redis.instance().delete(counter_key)
 
-    def find_word(self, chat_id, similar_word):
+    def find_word(self, chat_id, similar_word, max_results=10):
         """
         Searches for words similar to given word for chat_id
         :param chat_id: ID of chat
         :param similar_word: Word similar to which we should find
+        :param max_results: Max size of list returned
         :return: Unique found words
         """
         format_pattern = self.source(chat_id, '')
@@ -63,11 +64,11 @@ class TrigramRepository(RedisRepository):
         redis = self.redis.instance()
         words = set()
 
-        for pair in redis.scan_iter(match=search_pattern, count=10000):
+        for pair in redis.scan_iter(match=search_pattern, count=max_results):
             (first, second) = pair.decode(encoding).lstrip(format_pattern).split(self.separator)
             words.add(first if similar_word in first else second)
 
-        return words
+        return words[:10]
 
     def remove_word(self, chat_id, exact_word):
         """
