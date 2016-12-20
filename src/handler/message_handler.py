@@ -17,7 +17,7 @@ class MessageHandler(ParentHandler):
         self.media_checker = media_checker
         self.chance_manager = chance_manager
         self.spam_stickers = config.getlist('bot', 'spam_stickers')
-        self.media_checker_stickers = config.getlist('media_checker', 'stickers')
+        self.media_checker_messages = config.getlist('media_checker', 'messages')
 
     def handle(self, bot, update):
         chance = self.chance_manager.get_chance(update.message.chat.id)
@@ -38,9 +38,9 @@ class MessageHandler(ParentHandler):
                           (message.chat_type,
                            message.chat_id))
 
-            bot.send_sticker(chat_id=message.chat_id,
+            bot.send_message(chat_id=message.chat_id,
                              reply_to_message_id=message.message.message_id,
-                             sticker=choice(self.media_checker_stickers))
+                             text=choice(self.media_checker_messages))
 
     def __process_message(self, bot, message):
         logging.debug("[Chat %s %s message length] %s" %
