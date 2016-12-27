@@ -7,6 +7,7 @@ class TrigramRepository(RedisRepository):
         RedisRepository.__init__(self, source_name='trigrams:{}:{}')
         self.counter_source = 'trigrams:count:{}'
         self.separator = config['grammar']['separator']
+        self.stop_word = config['grammar']['stop_word']
 
     def store(self, chat_id, trigrams):
         """
@@ -18,7 +19,7 @@ class TrigramRepository(RedisRepository):
         save_pipe = self.redis.instance().pipeline()
 
         for trigram in trigrams:
-            key = self.source(chat_id, self.separator.join(trigram[:-1]))
+            key = self.source_name.format(chat_id, self.separator.join(trigram[:-1]))
             last_word = trigram[-1]
 
             counter_pipe.exists(key)
@@ -28,6 +29,15 @@ class TrigramRepository(RedisRepository):
         new_pairs_count = sum(map(lambda x: 1 if x == 0 else 0, counter_pipe.execute()))
         save_pipe.incrby(counter_key, new_pairs_count)
         save_pipe.execute()
+
+    def get_random_reply(self, chat_id, key):
+        reply = self.redis.instance().srandmember(self.source_name.format(chat_id, key))
+        reply = reply.decode(encoding) if reply is not None else None
+
+        if reply == self.stop_word:
+            return None
+
+        return reply
 
     def count(self, chat_id):
         """
@@ -45,7 +55,7 @@ class TrigramRepository(RedisRepository):
         Remove all trigrams from chat with chat_id
         :param chat_id: ID of chat
         """
-        pattern = self.source(chat_id, '*')
+        pattern = self.source_name.format(chat_id, '*')
         self.__remove_keys(pattern)
 
         counter_key = self.counter_source.format(chat_id)
@@ -59,8 +69,8 @@ class TrigramRepository(RedisRepository):
         :param max_results: Max size of list returned
         :return: Unique found words
         """
-        format_pattern = self.source(chat_id, '')
-        search_pattern = self.source(chat_id, '*' + similar_word + '*')
+        format_pattern = self.source_name.format(chat_id, '')
+        search_pattern = self.source_name.format(chat_id, '*' + similar_word + '*')
         redis = self.redis.instance()
         words = set()
 
@@ -68,7 +78,7 @@ class TrigramRepository(RedisRepository):
             (first, second) = pair.decode(encoding).lstrip(format_pattern).split(self.separator)
             words.add(first if similar_word in first else second)
 
-        return words[:10]
+        return list(words)[:10]
 
     def remove_word(self, chat_id, exact_word):
         """
@@ -77,8 +87,8 @@ class TrigramRepository(RedisRepository):
         :param exact_word: Exact word match
         """
 
-        self.__remove_keys(self.source(chat_id, exact_word + self.separator + '*'))
-        self.__remove_keys(self.source(chat_id, '*' + self.separator + exact_word))
+        self.__remove_keys(self.source_name.format(chat_id, exact_word + self.separator + '*'))
+        self.__remove_keys(self.source_name.format(chat_id, '*' + self.separator + exact_word))
 
     # FIXME. Not optimal performance wise
     def __remove_keys(self, pattern):

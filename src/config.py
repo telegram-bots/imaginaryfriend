@@ -43,8 +43,11 @@ chance_repository = ChanceRepository()
 media_repository = MediaRepository()
 job_repository = JobRepository()
 
-from src.service import *
-data_learner = DataLearner(tokenz)
-reply_generator = ReplyGenerator(tokenz)
+from src.service.data_learner import DataLearner
+from src.service.reply_generator import ReplyGenerator
+from src.service.media_uniqueness_checker import MediaUniquenessChecker
+from src.service.chat_purge_queue import ChatPurgeQueue
+data_learner = DataLearner()
+reply_generator = ReplyGenerator()
 media_checker = MediaUniquenessChecker()
 chat_purge_queue = ChatPurgeQueue()

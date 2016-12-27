@@ -1,10 +1,10 @@
-from src.config import trigram_repository
+from src.config import trigram_repository, tokenz
 
 
 class DataLearner:
-    def __init__(self, tokenizer):
+    def __init__(self):
         self.trigram_repository = trigram_repository
-        self.tokenizer = tokenizer
+        self.tokenizer = tokenz
 
     def learn(self, message):
         words = self.tokenizer.extract_words(message)

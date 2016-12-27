@@ -1,13 +1,19 @@
-from src.config import config, redis, encoding
-from src.utils import strings_has_equal_letters, capitalize, random_element
+from src.config import config, redis, tokenz, trigram_repository
+from src.utils import strings_has_equal_letters, capitalize
 
 
 class ReplyGenerator:
-    def __init__(self, tokenizer):
+    def __init__(self):
         self.redis = redis
-        self.tokenizer = tokenizer
+        self.tokenizer = tokenz
+        self.trigram_repository = trigram_repository
+
         self.max_words = config.getint('grammar', 'max_words')
         self.max_messages = config.getint('grammar', 'max_messages')
+
+        self.stop_word = config['grammar']['stop_word']
+        self.separator = config['grammar']['separator']
+        self.end_sentence = config['grammar']['end_sentence']
 
     def generate(self, message):
         messages = []
@@ -16,46 +22,42 @@ class ReplyGenerator:
         for trigram in self.tokenizer.split_to_trigrams(words):
             pair = trigram[:-1]
 
-            best_message = ''
-            for _ in range(self.max_messages):
-                generated = self.__generate_sentence(message.chat_id, pair)
-                if len(generated) > len(best_message):
-                    best_message = generated
+            messages.append(self.__generate_best_message(chat_id=message.chat_id, pair=pair))
 
-            if best_message:
-                messages.append(best_message)
-
-        result = random_element(messages) if len(messages) else ''
+        result = max(messages, key=len) if len(messages) else ''
 
         if strings_has_equal_letters(result, ''.join(words)):
             return ''
 
         return result
 
-    def __generate_sentence(self, chat_id, seed):
-        key = seed
+    def __generate_best_message(self, chat_id, pair):
+        best_message = ''
+        for _ in range(self.max_messages):
+            generated = self.__generate_sentence(chat_id=chat_id, pair=pair)
+            if len(generated) > len(best_message):
+                best_message = generated
+
+        return best_message
+
+    def __generate_sentence(self, chat_id, pair):
         gen_words = []
-        redis = self.redis.instance()
+        key = self.separator.join(pair)
 
         for _ in range(self.max_words):
-            words = key
+            words = key.split(self.separator)
 
-            if len(gen_words):
-                gen_words.append(words[0])
-            else:
-                gen_words.append(capitalize(words[0]))
+            gen_words.append(words[0])
 
-            next_word = redis.srandmember(self.tokenizer.to_key(chat_id=chat_id, pair=key))
+            next_word = self.trigram_repository.get_random_reply(chat_id, key)
             if next_word is None:
                 break
-            next_word = next_word.decode(encoding)
-            if next_word == self.tokenizer.stop_word:
-                break
 
-            key = words[1:] + [next_word]
+            key = self.separator.join(words[1:] + [next_word])
 
+        gen_words = list(filter(lambda w: w != self.stop_word, gen_words))
         sentence = ' '.join(gen_words).strip()
-        if sentence[-1:] not in self.tokenizer.end_sentence:
+        if sentence[-1:] not in self.end_sentence:
             sentence += self.tokenizer.random_end_sentence_token()
 
-        return sentence
+        return capitalize(sentence)
