@@ -46,20 +46,20 @@ ImaginaryFriend can:
 * `/get_stats`: get information on how many pairs are known by ImaginaryFriend,
 * `/chance n`: set the probability that ImaginaryFriend would reply to a random message (must be in range 1-50, default: 5),
 * `/сhance`: get current probability that ImaginaryFriend would reply to a message,
-* `/moderate word`: -
-* `/moderate word_id`: -
-* `/meow`, `/woof`, `/borscht`, `/boobs`, `/butts`: make ImaginaryFriend send a picture.
+* `/mod_f word`: -
+* `/mod_d word`: -
+* `/meow`, `/woof`, `/borscht`, `/boobs`, `/butts` and others: make ImaginaryFriend send a picture.
 
 ## Installation and Setup
 
 ### Dependencies
 * `python >= 3.5.2`
 * `python-telegram-bot==5.2.0`
-* `orator==0.9.2`
 * `redis==2.10.5`
 
 ### Setup
 1. Install dependencies with PIP
-2. Rename `main.cfg.example` to `main.cfg`, set `bot` and `db` properties
-3. Execute command `orator migrate -c db.py` to create database and required tables
-4. Run the `run.py` using python
+2. Install `Redis`
+3. Rename `main.cfg.example` to `main.cfg`, set `bot` and `redis` properties
+4. (Optionally) Configure `updates` property for websocket support
+5. Run the `run.py` using python

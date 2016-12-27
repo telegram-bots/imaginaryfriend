@@ -35,12 +35,3 @@ cert=
 host=
 port=
 db=
-
-[db]
-driver=
-host=
-database=
-user=
-password=
-prefix=
-log_queries=
