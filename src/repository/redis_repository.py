@@ -7,9 +7,6 @@ class RedisRepository(BaseRepository):
         self.redis = redis
         self.source_name = source_name
 
-    def source(self, *args):
-        return self.source_name.format(args)
-
     def to_int(self, byte, default):
         if byte is None:
             return default

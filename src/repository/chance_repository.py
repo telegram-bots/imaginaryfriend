@@ -13,7 +13,7 @@ class ChanceRepository(RedisRepository):
         :param chat_id: ID of chat
         :return: Current chance
         """
-        key = self.source(chat_id)
+        key = self.source_name.format(chat_id)
         chance = self.redis.instance().get(key)
 
         return self.to_int(chance, self.default_chance)
@@ -25,7 +25,7 @@ class ChanceRepository(RedisRepository):
         :param new_chance: Chance to set
         :return: Old chance
         """
-        key = self.source(chat_id)
+        key = self.source_name.format(chat_id)
         old_chance = self.redis.instance().getset(key, new_chance)
 
         return self.to_int(old_chance, self.default_chance)

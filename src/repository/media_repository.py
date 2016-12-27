@@ -17,7 +17,7 @@ class MediaRepository(RedisRepository):
         """
         self.redis \
             .instance() \
-            .zremrangebyscore(self.source(chat_id), 0, dt.timestamp())
+            .zremrangebyscore(self.source_name.format(chat_id), 0, dt.timestamp())
 
     def is_exists(self, chat_id, media_list):
         """
@@ -28,7 +28,7 @@ class MediaRepository(RedisRepository):
         """
         delete_at = (datetime.now() + self.lifetime).timestamp()
         pipe = self.redis.instance().pipeline()
-        key = self.source(chat_id)
+        key = self.source_name.format(chat_id)
 
         for media in media_list:
             pipe.zadd(key, media, delete_at)
