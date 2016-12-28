@@ -1,11 +1,11 @@
-from src.config import config, redis, tokenz, trigram_repository
+from src.config import config, redis, tokenizer, trigram_repository
 from src.utils import strings_has_equal_letters, capitalize
 
 
 class ReplyGenerator:
     def __init__(self):
         self.redis = redis
-        self.tokenizer = tokenz
+        self.tokenizer = tokenizer
         self.trigram_repository = trigram_repository
 
         self.max_words = config.getint('grammar', 'max_words')
@@ -16,20 +16,15 @@ class ReplyGenerator:
         self.end_sentence = config['grammar']['end_sentence']
 
     def generate(self, message):
-        messages = []
-
         words = self.tokenizer.extract_words(message)
-        for trigram in self.tokenizer.split_to_trigrams(words):
-            pair = trigram[:-1]
+        pairs = [trigram[:-1] for trigram in self.tokenizer.split_to_trigrams(words)]
+        messages = [self.__generate_best_message(chat_id=message.chat_id, pair=pair) for pair in pairs]
+        longest_message = max(messages, key=len) if len(messages) else ''
 
-            messages.append(self.__generate_best_message(chat_id=message.chat_id, pair=pair))
-
-        result = max(messages, key=len) if len(messages) else ''
-
-        if strings_has_equal_letters(result, ''.join(words)):
+        if longest_message and strings_has_equal_letters(longest_message, ''.join(words)):
             return ''
 
-        return result
+        return longest_message
 
     def __generate_best_message(self, chat_id, pair):
         best_message = ''

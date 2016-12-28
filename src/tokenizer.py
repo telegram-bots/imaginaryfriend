@@ -6,7 +6,6 @@ from src.config import config
 class Tokenizer:
     def __init__(self):
         self.chain_length = config.getint('grammar', 'chain_length')
-        self.separator = config['grammar']['separator']
         self.stop_word = config['grammar']['stop_word']
         self.end_sentence = config['grammar']['end_sentence']
         self.garbage_tokens = config['grammar']['all']

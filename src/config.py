@@ -34,8 +34,8 @@ for section, options in sections.items():
 from src.redis_c import Redis
 redis = Redis(config)
 
-from src.service.tokenizer import Tokenizer
-tokenz = Tokenizer()
+from src.tokenizer import Tokenizer
+tokenizer = Tokenizer()
 
 from src.repository import *
 trigram_repository = TrigramRepository()
@@ -43,10 +43,7 @@ chance_repository = ChanceRepository()
 media_repository = MediaRepository()
 job_repository = JobRepository()
 
-from src.service.data_learner import DataLearner
-from src.service.reply_generator import ReplyGenerator
-from src.service.media_uniqueness_checker import MediaUniquenessChecker
-from src.service.chat_purge_queue import ChatPurgeQueue
+from src.service import *
 data_learner = DataLearner()
 reply_generator = ReplyGenerator()
 media_checker = MediaUniquenessChecker()

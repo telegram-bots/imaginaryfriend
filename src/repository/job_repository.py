@@ -1,12 +1,11 @@
 from . import RedisRepository
-from src.config import redis, encoding
+from src.config import encoding
 import json
 
 
 class JobRepository(RedisRepository):
     def __init__(self):
         RedisRepository.__init__(self, source_name='jobs')
-        self.redis = redis
 
     def add(self, chat_id, datetime):
         self.redis.instance().hset(
