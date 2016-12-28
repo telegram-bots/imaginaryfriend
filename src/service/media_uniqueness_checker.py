@@ -4,6 +4,9 @@ from urllib.parse import urlparse
 
 
 class MediaUniquenessChecker:
+    """
+    Checks message links and photos for uniqueness
+    """
     def __init__(self):
         self.media_repository = media_repository
 
@@ -19,7 +22,7 @@ class MediaUniquenessChecker:
     def __extract_media(self, message):
         media = []
 
-        for entity in filter(lambda e: e.type == 'url', message.message.entities):
+        for entity in filter(lambda e: e.type == 'url', message.entities):
             link = self.__prettify(message.text[entity.offset:entity.length + entity.offset])
             media.append(link)
 

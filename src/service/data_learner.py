@@ -7,6 +7,10 @@ class DataLearner:
         self.tokenizer = tokenizer
 
     def learn(self, message):
+        """
+        Split message to trigrams and write to DB
+        :param message: Message
+        """
         words = self.tokenizer.extract_words(message)
         trigrams = self.tokenizer.split_to_trigrams(words)
 

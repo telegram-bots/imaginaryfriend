@@ -1,7 +1,7 @@
 import logging
 
 from random import choice
-from src.config import config, data_learner, reply_generator, media_checker, chance_manager
+from src.config import config, data_learner, reply_generator, media_checker, chance_repository
 from telegram.ext import MessageHandler as ParentHandler, Filters
 from telegram import ChatAction
 from src.domain.message import Message
@@ -15,12 +15,12 @@ class MessageHandler(ParentHandler):
         self.data_learner = data_learner
         self.reply_generator = reply_generator
         self.media_checker = media_checker
-        self.chance_manager = chance_manager
+        self.chance_repository = chance_repository
         self.spam_stickers = config.getlist('bot', 'spam_stickers')
         self.media_checker_messages = config.getlist('media_checker', 'messages')
 
     def handle(self, bot, update):
-        chance = self.chance_manager.get_chance(update.message.chat.id)
+        chance = self.chance_repository.get(update.message.chat.id)
         message = Message(chance=chance, message=update.message)
 
         self.__check_media_uniqueness(bot, message)

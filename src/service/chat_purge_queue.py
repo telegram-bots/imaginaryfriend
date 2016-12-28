@@ -6,6 +6,9 @@ from src.config import config, trigram_repository, job_repository
 
 
 class ChatPurgeQueue:
+    """
+    Scheduling and execution of chat purge
+    """
     def __init__(self):
         self.queue = None
         self.jobs = {}
@@ -21,6 +24,12 @@ class ChatPurgeQueue:
         return self
 
     def add(self, chat_id, interval=None, db=True):
+        """
+        Schedules purge of chat data
+        :param chat_id: ID of chat
+        :param interval: Interval in seconds
+        :param db: Should be added to db or not
+        """
         interval = interval if interval is not None else self.default_interval
         scheduled_at = datetime.now() + timedelta(seconds=interval)
 
@@ -35,6 +44,10 @@ class ChatPurgeQueue:
             self.job_repository.add(chat_id, scheduled_at)
 
     def remove(self, chat_id):
+        """
+        Removes scheduled purge job from queue
+        :param chat_id: ID of chat
+        """
         if chat_id not in self.jobs:
             return
 

@@ -3,6 +3,9 @@ from src.utils import strings_has_equal_letters, capitalize
 
 
 class ReplyGenerator:
+    """
+    Handles generation of responses for user message
+    """
     def __init__(self):
         self.redis = redis
         self.tokenizer = tokenizer
@@ -16,6 +19,11 @@ class ReplyGenerator:
         self.end_sentence = config['grammar']['end_sentence']
 
     def generate(self, message):
+        """
+        Generates response based on message words
+        :param message: Message
+        :return: Response or empty string, if generated response equals to user message
+        """
         words = self.tokenizer.extract_words(message)
         pairs = [trigram[:-1] for trigram in self.tokenizer.split_to_trigrams(words)]
         messages = [self.__generate_best_message(chat_id=message.chat_id, pair=pair) for pair in pairs]
