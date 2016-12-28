@@ -47,13 +47,17 @@ class ReplyGenerator:
         for _ in range(self.max_words):
             words = key.split(self.separator)
 
-            gen_words.append(words[0])
+            gen_words.append(words[1] if len(gen_words) == 0 else words[1])
 
             next_word = self.trigram_repository.get_random_reply(chat_id, key)
             if next_word is None:
                 break
 
             key = self.separator.join(words[1:] + [next_word])
+
+        last_word = key.split(self.separator)[-1]
+        if last_word not in gen_words:
+            gen_words.append(last_word)
 
         gen_words = list(filter(lambda w: w != self.stop_word, gen_words))
         sentence = ' '.join(gen_words).strip()
