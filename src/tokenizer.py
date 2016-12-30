@@ -1,6 +1,8 @@
 import re
 from src.utils import random_element
 from src.config import config
+from typing import List
+from src.domain.message import Message
 
 
 class Tokenizer:
@@ -10,7 +12,7 @@ class Tokenizer:
         self.end_sentence = config['grammar']['end_sentence']
         self.garbage_tokens = config['grammar']['all']
 
-    def split_to_trigrams(self, src_words):
+    def split_to_trigrams(self, src_words: List[str]):
         if len(src_words) <= self.chain_length:
             yield from ()
 
@@ -25,7 +27,7 @@ class Tokenizer:
         for i in range(len(words) - self.chain_length):
             yield words[i:i + self.chain_length + 1]
 
-    def extract_words(self, message):
+    def extract_words(self, message: Message) -> List[str]:
         symbols = list(re.sub('\s', ' ', message.text))
 
         for entity in message.entities:
@@ -33,10 +35,10 @@ class Tokenizer:
 
         return list(filter(None, map(self.__prettify, ''.join(symbols).split(' '))))
 
-    def random_end_sentence_token(self):
+    def random_end_sentence_token(self) -> str:
         return random_element(list(self.end_sentence))
 
-    def __prettify(self, word):
+    def __prettify(self, word: str) -> str:
         lowercase_word = word.lower().strip()
         last_symbol = lowercase_word[-1:]
         if last_symbol not in self.end_sentence:

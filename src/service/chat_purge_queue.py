@@ -1,7 +1,8 @@
 import logging
 
 from datetime import datetime, timedelta
-from telegram.ext import Job
+from telegram.ext import Job, JobQueue
+from telegram.bot import Bot
 from src.config import config, trigram_repository, job_repository
 
 
@@ -16,14 +17,14 @@ class ChatPurgeQueue:
         self.trigram_repository = trigram_repository
         self.default_interval = config.getfloat('bot', 'purge_interval')
 
-    def instance(self, queue):
+    def instance(self, queue: JobQueue):
         self.queue = queue
 
         self.__load_existing_jobs()
 
         return self
 
-    def add(self, chat_id, interval=None, db=True):
+    def add(self, chat_id: int, interval: float=None, db: bool=True) -> None:
         """
         Schedules purge of chat data
         :param chat_id: ID of chat
@@ -43,7 +44,7 @@ class ChatPurgeQueue:
         if db is True:
             self.job_repository.add(chat_id, scheduled_at)
 
-    def remove(self, chat_id):
+    def remove(self, chat_id: int) -> None:
         """
         Removes scheduled purge job from queue
         :param chat_id: ID of chat
@@ -58,14 +59,14 @@ class ChatPurgeQueue:
 
         self.job_repository.delete(chat_id)
 
-    def __load_existing_jobs(self):
+    def __load_existing_jobs(self) -> None:
         existing_jobs = self.job_repository.get_all()
 
         for job in existing_jobs:
             interval = self.__timestamp_to_interval(job['execute_at'])
             self.add(chat_id=job['chat_id'], interval=interval, db=False)
 
-    def __timestamp_to_interval(self, timestamp):
+    def __timestamp_to_interval(self, timestamp: str) -> float:
         date_time = datetime.fromtimestamp(timestamp)
         current_datetime = datetime.now()
 
@@ -76,10 +77,10 @@ class ChatPurgeQueue:
 
         return interval
 
-    def __make_purge_job(self, chat_id, interval):
+    def __make_purge_job(self, chat_id: int, interval: float):
         return Job(self.__purge_callback, interval, repeat=False, context=chat_id)
 
-    def __purge_callback(self, bot, job):
+    def __purge_callback(self, bot: Bot, job: Job):
         chat_id = job.context
 
         logging.info("Removing chat #%d data..." % chat_id)

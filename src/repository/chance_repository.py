@@ -7,7 +7,7 @@ class ChanceRepository(RedisRepository):
         RedisRepository.__init__(self, source_name='chance:{}')
         self.default_chance = config.getint('bot', 'default_chance')
 
-    def get(self, chat_id):
+    def get(self, chat_id: int) -> int:
         """
         Returns current chance of bot reply for chat_id
         :param chat_id: ID of chat
@@ -18,7 +18,7 @@ class ChanceRepository(RedisRepository):
 
         return self.to_int(chance, self.default_chance)
 
-    def set(self, chat_id, new_chance):
+    def set(self, chat_id: int, new_chance: int) -> int:
         """
         Sets new reply chance for chat_id and returns old
         :param chat_id: ID of chat

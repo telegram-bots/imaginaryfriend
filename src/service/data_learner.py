@@ -1,4 +1,5 @@
 from src.config import trigram_repository, tokenizer
+from src.domain.message import Message
 
 
 class DataLearner:
@@ -6,7 +7,7 @@ class DataLearner:
         self.trigram_repository = trigram_repository
         self.tokenizer = tokenizer
 
-    def learn(self, message):
+    def learn(self, message: Message) -> None:
         """
         Split message to trigrams and write to DB
         :param message: Message

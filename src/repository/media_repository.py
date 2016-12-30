@@ -9,7 +9,7 @@ class MediaRepository(RedisRepository):
         RedisRepository.__init__(self, source_name='media_checker:{}')
         self.lifetime = timedelta(seconds=config.getfloat('media_checker', 'lifetime'))
 
-    def clear_stale_entries(self, chat_id, dt):
+    def clear_stale_entries(self, chat_id, dt) -> None:
         """
         Remove all entries older than datetime (dt), for given chat_id
         :param chat_id: ID of chat
@@ -19,7 +19,7 @@ class MediaRepository(RedisRepository):
             .instance() \
             .zremrangebyscore(self.source_name.format(chat_id), 0, dt.timestamp())
 
-    def is_exists(self, chat_id, media_list):
+    def is_exists(self, chat_id, media_list) -> bool:
         """
         Checks that at least one media entry is already in storage
         :param chat_id: ID of chat

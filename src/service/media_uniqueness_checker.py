@@ -1,6 +1,8 @@
 from datetime import datetime
 from src.config import media_repository
 from urllib.parse import urlparse
+from src.domain.message import Message
+from typing import List
 
 
 class MediaUniquenessChecker:
@@ -10,7 +12,7 @@ class MediaUniquenessChecker:
     def __init__(self):
         self.media_repository = media_repository
 
-    def check(self, message):
+    def check(self, message: Message):
         """
         Returns True if at least one media entity was already in this chat
         """
@@ -19,7 +21,7 @@ class MediaUniquenessChecker:
 
         return self.media_repository.is_exists(chat_id=message.chat_id, media_list=media)
 
-    def __extract_media(self, message):
+    def __extract_media(self, message: Message) -> List[str]:
         media = []
 
         for entity in filter(lambda e: e.type == 'url', message.entities):
@@ -30,7 +32,7 @@ class MediaUniquenessChecker:
 
         return media
 
-    def __prettify(self, url):
+    def __prettify(self, url: str) -> str:
         if not url.startswith('http://') and not url.startswith('https://'):
             url = 'http://' + url
 

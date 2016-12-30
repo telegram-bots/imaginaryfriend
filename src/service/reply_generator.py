@@ -1,5 +1,7 @@
 from src.config import config, redis, tokenizer, trigram_repository
 from src.utils import strings_has_equal_letters, capitalize
+from src.domain.message import Message
+from typing import List
 
 
 class ReplyGenerator:
@@ -18,7 +20,7 @@ class ReplyGenerator:
         self.separator = config['grammar']['separator']
         self.end_sentence = config['grammar']['end_sentence']
 
-    def generate(self, message):
+    def generate(self, message: Message) -> str:
         """
         Generates response based on message words
         :param message: Message
@@ -34,7 +36,7 @@ class ReplyGenerator:
 
         return longest_message
 
-    def __generate_best_message(self, chat_id, pair):
+    def __generate_best_message(self, chat_id: int, pair: List[str]) -> str:
         best_message = ''
         for _ in range(self.max_messages):
             generated = self.__generate_sentence(chat_id=chat_id, pair=pair)
@@ -43,7 +45,7 @@ class ReplyGenerator:
 
         return best_message
 
-    def __generate_sentence(self, chat_id, pair):
+    def __generate_sentence(self, chat_id: int, pair: List[str]) -> str:
         gen_words = []
         key = self.separator.join(pair)
 
