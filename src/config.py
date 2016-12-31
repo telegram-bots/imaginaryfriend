@@ -9,8 +9,7 @@ sections = {
     'logging': ['level'],
     'updates': ['mode'],
     'media_checker': ['lifetime', 'messages'],
-    'redis': ['host', 'port', 'db'],
-    'db': []
+    'redis': ['host', 'port', 'db']
 }
 
 
