@@ -58,9 +58,14 @@ class ReplyGenerator:
 
             key = self.separator.join(words[1:] + [next_word])
 
+        # Append last word, if it not already in the list
         last_word = key.split(self.separator)[-1]
         if last_word not in gen_words:
             gen_words.append(last_word)
+
+        # Keep only one word, if all words in list are the same
+        if all(w == gen_words[0] for w in gen_words):
+            gen_words = [gen_words[0]]
 
         gen_words = list(filter(lambda w: w != self.stop_word, gen_words))
         sentence = ' '.join(gen_words).strip()
