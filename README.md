@@ -46,8 +46,8 @@ ImaginaryFriend can:
 * `/get_stats`: get information on how many pairs are known by ImaginaryFriend,
 * `/chance n`: set the probability that ImaginaryFriend would reply to a random message (must be in range 1-50, default: 5),
 * `/сhance`: get current probability that ImaginaryFriend would reply to a message,
-* `/mod_f word`: find all the words containing pattern,
-* `/mod_d word`,
+* `/mod_f pattern`: find all the words starting with pattern,
+* `/mod_d word`: remove word from ImaginaryFriend's dictionary,
 * `/meow`, `/woof`, `/borscht`, `/boobs`, `/butts` and others: make ImaginaryFriend send a corresponding picture,
 * `/vzhuh phrase`: make ImaginaryFriend create a [_вжух_ meme](https://vk.com/vzhuhcat).
 
