@@ -76,7 +76,10 @@ class TrigramRepository(RedisRepository):
 
         for pair in redis.scan_iter(match=search_pattern, count=max_results):
             (first, second) = pair.decode(encoding).lstrip(format_pattern).split(self.separator)
-            words.add(first if similar_word in first else second)
+            if first.startswith(similar_word):
+                words.add(first)
+            if second.startswith(similar_word):
+                words.add(second)
 
         return list(words)[:10]
 
@@ -86,9 +89,8 @@ class TrigramRepository(RedisRepository):
         :param chat_id: ID of chat
         :param exact_word: Exact word match
         """
-
-        self.__remove_keys(self.source_name.format(chat_id, exact_word + self.separator + '*'))
-        self.__remove_keys(self.source_name.format(chat_id, '*' + self.separator + exact_word))
+        self.__remove_keys(self.source_name.format(chat_id, exact_word + "\\" + self.separator + '*'))
+        self.__remove_keys(self.source_name.format(chat_id, '*' + "\\" + self.separator + exact_word))
 
     # FIXME. Not optimal performance wise
     def __remove_keys(self, pattern):
