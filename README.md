@@ -9,6 +9,7 @@ ImaginaryFriend can:
 * reply to random messages in chat groups,
 * reply to replies to its messages / messages mentioning it,
 * send (one!) sticker ("I'm frustrated by all these stickers"),
+* detect repeating media files and send [:||||||||||||:] to chat,
 * do some commands.
 
 ### Examples
@@ -42,7 +43,7 @@ ImaginaryFriend can:
 
 ## Commands
 
-* `/ping`,
+* `/ping`: you know the drill,
 * `/get_stats`: get information on how many pairs are known by ImaginaryFriend,
 * `/chance n`: set the probability that ImaginaryFriend would reply to a random message (must be in range 1-50, default: 5),
 * `/сhance`: get current probability that ImaginaryFriend would reply to a message,
@@ -53,14 +54,19 @@ ImaginaryFriend can:
 
 ## Installation and Setup
 
-### Dependencies
-* `python >= 3.5.2`
-* `python-telegram-bot==5.2.0`
-* `redis==2.10.5`
+### Setup using Docker
+1. Install [Docker](https://store.docker.com/search?offering=community&type=edition)
+2. Rename `main.cfg.example` to `main.cfg`
+3. Talk to [@botfather](https://telegram.me/botfather) and create your own bot.
+4. Open `main.cfg` file in text editor and paste your newly created bot token into `bot`.`token` property
+5. Execute `docker-compose up`
+6. Congrats! You now have ImaginaryFriend of your own!
 
-### Setup
-1. Install dependencies with PIP
-2. Install `Redis`
-3. Rename `main.cfg.example` to `main.cfg`, set `bot` and `redis` properties
-4. (Optionally) Configure `updates` property for websocket support
-5. Run the `run.py` using python
+## Setup without Docker
+1. Install [Python >= 3.5.2](https://www.python.org/downloads/)
+2. Install [Redis >= 3.2](https://redis.io/download)
+3. Install dependencies with PIP by executing command `pip install -r requirements.txt`
+4. Talk to [@botfather](https://telegram.me/botfather) and create your own bot.
+5. Open `main.cfg` file in text editor and paste your newly created bot token into `bot`.`token` property
+6. (Optionally) Configure `updates` property for websocket support
+7. Execute the `python run.py`

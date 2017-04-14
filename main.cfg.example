@@ -1,8 +1,7 @@
 [bot]
 token=
-name=
-anchors=
-messages=
+name=ImaginaryFriend
+anchors=bot
 purge_interval=43200.0
 default_chance=5
 spam_stickers=BQADAgADSAIAAkcGQwU-G-9SZUDTWAI
@@ -32,6 +31,6 @@ key=
 cert=
 
 [redis]
-host=
-port=
-db=
+host=redis
+port=6379
+db=0

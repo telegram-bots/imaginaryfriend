@@ -1,0 +1,11 @@
+version: '2.1'
+services:
+  bot:
+    build: .
+    command: python run.py
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+  redis:
+    image: redis:3.2.8-alpine
