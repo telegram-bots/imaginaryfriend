@@ -59,14 +59,14 @@ ImaginaryFriend can:
 2. Rename `main.cfg.example` to `main.cfg`
 3. Talk to [@botfather](https://telegram.me/botfather) and create your own bot.
 4. Open `main.cfg` file in text editor and paste your newly created bot token into `bot`.`token` property
-5. Execute `docker-compose up`
-6. Congrats! You now have ImaginaryFriend of your own!
+5. Execute `docker-compose up`. Congrats! You now have ImaginaryFriend of your own!
 
-## Setup without Docker
+### Setup without Docker
 1. Install [Python >= 3.5.2](https://www.python.org/downloads/)
 2. Install [Redis >= 3.2](https://redis.io/download)
 3. Install dependencies with PIP by executing command `pip install -r requirements.txt`
-4. Talk to [@botfather](https://telegram.me/botfather) and create your own bot.
-5. Open `main.cfg` file in text editor and paste your newly created bot token into `bot`.`token` property
-6. (Optionally) Configure `updates` property for websocket support
-7. Execute the `python run.py`
+4. Rename `main.cfg.example` to `main.cfg`
+5. Talk to [@botfather](https://telegram.me/botfather) and create your own bot.
+6. Open `main.cfg` file in text editor and paste your newly created bot token into `bot`.`token` property
+7. (Optionally) Configure `updates` property for websocket support
+8. Execute the `python run.py`
