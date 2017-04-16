@@ -29,12 +29,12 @@ class Vzhuh(Base):
         else:
             result.append(text)
 
-        return '\r\n'.join(result)
+        return '\n'.join(result)
 
     @staticmethod
     def create_image(text):
         img = Image.open("data/vzhuh_sample.png")
         draw = ImageDraw.Draw(img)
-        font = ImageFont.truetype("data/Futura.ttc", 40, index=2)
+        font = ImageFont.truetype("data/Impact.ttf", 44, index=0)
         draw.text((222, 280), text, (0, 0, 0), font=font)
         img.save('data/sample-out.png')
