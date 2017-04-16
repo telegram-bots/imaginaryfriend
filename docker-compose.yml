@@ -1,6 +1,4 @@
 version: '2.1'
-volumes:
-  data: {}
 services:
   bot:
     build: .
@@ -12,4 +10,4 @@ services:
   redis:
     image: redis:3.2.8-alpine
     volumes:
-      - data:/data
+      - ./data:/data
