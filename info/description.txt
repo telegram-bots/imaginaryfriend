@@ -1,0 +1,2 @@
+Well, Imaginary Friend bot can do a lot – type /help to know about available commands.
+But its purpose is to listen to you, learn from you, and eventually become a perfect conversational partner.

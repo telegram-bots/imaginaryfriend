@@ -1,7 +1,0 @@
-start - Start bot
-help - Commands list
-ping - Ping the bot
-get_stats - Get number of pairs
-chance - Get or set reply chance (1-50)
-mod_f - (ADMIN ONLY) Find word to remove
-mod_d - (ADMIN ONLY) Remove given word
