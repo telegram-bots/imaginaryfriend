@@ -7,7 +7,9 @@ services:
       - .:/code
     depends_on:
       - redis
+    restart: unless-stopped
   redis:
     image: redis:3.2.8-alpine
     volumes:
       - ./data:/data
+    restart: unless-stopped
