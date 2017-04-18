@@ -1,5 +1,5 @@
 FROM python:3.6.1-slim
-ENV CONFIG_PATH "./main.cfg"
+ENV CONFIG_PATH "cfg/main.docker.cfg"
 RUN mkdir /code
 WORKDIR /code
 ADD requirements.txt /code/

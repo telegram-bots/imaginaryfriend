@@ -19,7 +19,7 @@ def getlist(self, section, option, type=str):
 
 configparser.ConfigParser.getlist = getlist
 
-config_path = os.environ['CONFIG_PATH']
+config_path = os.getenv('CONFIG_PATH', 'cfg/main.plain.cfg')
 config = configparser.ConfigParser()
 config.read(config_path, encoding=encoding)
 

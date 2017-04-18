@@ -1,31 +1,11 @@
 from .base import Base
+from src.utils import read_to_string
 
 
 class Help(Base):
     name = 'help'
+    text = read_to_string('info/help.txt')
 
     @staticmethod
     def execute(bot, command):
-        Help.reply(
-            bot,
-            command,
-            """Add me to your group and let me listen to your chat for a while.
-When I learn enough word pairs, I'll start bringing fun and absurdity to your conversations.
-
-Available commands:
-• /ping: u know the drill,
-• /get_stats: get the number of word pairs I've learned in this chat,
-• /chance <n>: set the chance that I'll reply to a random message (must be in range 1-50, default: 5),
-• /chance: get the current chance of my random reply,
-• /meow: show random cat pic,
-• /borscht: show random borscht pic,
-• /vzhuh и текст: create вжух meme with «вжух и текст» caption,
-• /woof: show random dog pic,
-• /boobs: show random boobs pic,
-• /butts: show random butt pic,
-• /xkcd: show random xkcd comic.
-
-If you get tired of me, you can kick me from the group.
-In 12 hours, I'll forget everything that have been learned in your chat, so you can add me again and teach me new things!
-"""
-        )
+        Help.reply(bot, command, Help.text)

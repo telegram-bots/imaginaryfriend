@@ -1,6 +1,6 @@
 My great plan is to create a Telegram chat bot that would be like [shizoid](https://github.com/top4ek/shizoid), but in Python and maybe with some extra features.
 
-A-a-a-a-and... it works! Thanks to [@REDNBLACK](https://github.com/REDNBLACK). 
+A-a-a-a-and... it works ([@ImaginaryFriendBot](https://t.me/ImaginaryFriendBot))! Thanks to [@REDNBLACK](https://github.com/REDNBLACK). 
 
 ## Features
 
@@ -56,17 +56,17 @@ ImaginaryFriend can:
 
 ### Setup using Docker
 1. Install [Docker](https://store.docker.com/search?offering=community&type=edition)
-2. Rename `main.cfg.example` to `main.cfg`
-3. Talk to [@botfather](https://telegram.me/botfather) and create your own bot.
-4. Open `main.cfg` file in text editor and paste your newly created bot token into `bot`.`token` property
+2. Open `cfg` dir and rename `main.docker.cfg.example` to `main.docker.cfg`.
+3. Talk to [@botfather](https://t.me/botfather) and create your own bot.
+4. Open `main.docker.cfg` file in text editor and paste your newly created bot token into `bot`.`token` property.
 5. Execute `docker-compose up`. Congrats! You now have ImaginaryFriend of your own!
 
 ### Setup without Docker
 1. Install [Python >= 3.5.2](https://www.python.org/downloads/)
 2. Install [Redis >= 3.2](https://redis.io/download)
 3. Install dependencies with PIP by executing command `pip install -r requirements.txt`
-4. Rename `main.cfg.example` to `main.cfg`
-5. Talk to [@botfather](https://telegram.me/botfather) and create your own bot.
-6. Open `main.cfg` file in text editor and paste your newly created bot token into `bot`.`token` property
-7. (Optionally) Configure `updates` property for websocket support
+4. Open `cfg` dir and rename `main.plain.cfg.example` to `main.plain.cfg`
+5. Talk to [@botfather](https://t.me/botfather) and create your own bot.
+6. Open `main.plain.cfg` file in text editor and paste your newly created bot token into `bot`.`token` property.
+7. (Optionally) Configure `updates` property for websocket support and `redis` property to point to your Redis instance.
 8. Execute the `python run.py`

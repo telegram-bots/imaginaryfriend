@@ -34,3 +34,9 @@ def safe_cast(val, to_type, default=None):
         return to_type(val)
     except (ValueError, TypeError):
         return default
+
+
+def read_to_string(file_path):
+    with open(file_path, 'r') as file:
+        data = file.read()
+    return data
