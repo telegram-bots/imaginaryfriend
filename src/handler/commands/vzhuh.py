@@ -10,7 +10,7 @@ class Vzhuh(Base):
         text = Vzhuh.format_text('вжух ' + ' '.join(command.args))
         Vzhuh.create_image(text)
 
-        bot.send_photo(chat_id=command.chat_id, photo=open('data/sample-out.png', 'rb'))
+        bot.send_photo(chat_id=command.chat_id, photo=open('storage/vzhuh.png', 'rb'))
 
     @staticmethod
     def format_text(text):
@@ -33,8 +33,8 @@ class Vzhuh(Base):
 
     @staticmethod
     def create_image(text):
-        img = Image.open("data/vzhuh_sample.png")
+        img = Image.open("resources/vzhuh/sample.png")
         draw = ImageDraw.Draw(img)
-        font = ImageFont.truetype("data/Impact.ttf", 44, index=0)
+        font = ImageFont.truetype('resources/vzhuh/Impact.ttf', 44, index=0)
         draw.text((222, 280), text, (0, 0, 0), font=font)
-        img.save('data/sample-out.png')
+        img.save('storage/vzhuh.png')

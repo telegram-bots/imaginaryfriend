@@ -11,5 +11,5 @@ services:
   redis:
     image: redis:3.2.8-alpine
     volumes:
-      - ./data:/data
+      - ./storage:/data
     restart: unless-stopped

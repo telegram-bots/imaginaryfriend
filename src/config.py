@@ -19,9 +19,11 @@ def getlist(self, section, option, type=str):
 
 configparser.ConfigParser.getlist = getlist
 
-config_path = os.getenv('CONFIG_PATH', 'cfg/main.plain.cfg')
+root_config = 'resources/main.cfg'
+user_config = os.getenv('CONFIG_PATH', 'cfg/main.plain.cfg')
 config = configparser.ConfigParser()
-config.read(config_path, encoding=encoding)
+config.read(root_config, encoding=encoding)
+config.read(user_config, encoding=encoding)
 
 for section, options in sections.items():
     if not config.has_section(section):
