@@ -1,5 +1,6 @@
 [bot]
 token=
+name=
 
 [updates]
 mode=polling
