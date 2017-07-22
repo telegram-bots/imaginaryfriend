@@ -6,6 +6,7 @@ Available commands:
 • /get_stats: get the number of word pairs I've learned in this chat,
 • /chance <n>: set the chance that I'll reply to a random message (must be in range 1-50, default: 5),
 • /chance: get the current chance of my random reply,
+• /stfu: turn on/off silent mode,
 • /meow: show random cat pic,
 • /borscht: show random borscht pic,
 • /vzhuh и текст: create вжух meme with «вжух и текст» caption,
