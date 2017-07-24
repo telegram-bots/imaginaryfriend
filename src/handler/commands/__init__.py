@@ -1,18 +1,19 @@
 from src.handler.commands.base import Base
-from src.handler.commands.start import Start
-from src.handler.commands.help import Help
-from src.handler.commands.ping import Ping
-from src.handler.commands.get_stats import GetStats
-from src.handler.commands.moderate import Moderate
 from src.handler.commands.chance import Chance
+from src.handler.commands.get_stats import GetStats
+from src.handler.commands.help import Help
+from src.handler.commands.moderate import Moderate
+from src.handler.commands.ping import Ping
+from src.handler.commands.start import Start
 
-from src.handler.commands.butts import Butts
 from src.handler.commands.boobs import Boobs
-from src.handler.commands.meow import Meow
-from src.handler.commands.woof import Woof
 from src.handler.commands.borscht import Borscht
-from src.handler.commands.xkcd import XKCD
+from src.handler.commands.butts import Butts
+from src.handler.commands.facepalm import Facepalm
+from src.handler.commands.meow import Meow
 from src.handler.commands.vzhuh import Vzhuh
+from src.handler.commands.woof import Woof
+from src.handler.commands.xkcd import XKCD
 
 commands = {}
 for clazz in Base.__subclasses__():
