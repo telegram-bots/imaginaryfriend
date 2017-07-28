@@ -12,7 +12,8 @@ Available commands:
 • /woof: show random dog pic,
 • /boobs: show random boobs pic,
 • /butts: show random butt pic,
-• /xkcd: show random xkcd comic.
+• /xkcd: show random xkcd comic
+• /o: send random facepalm pic.
 
 If you get tired of me, you can kick me from the group.
 In 12 hours, I'll forget everything that have been learned in your chat, so you can add me again and teach me new things!
