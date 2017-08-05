@@ -2,11 +2,14 @@
 *.pyc
 *.rb
 *.sublime-workspace
+*.sublime-project
 *.txt
 logging.cfg
 storage
 venv
 ruby*/
+.idea
+*.ipynb
 
 ### Linux ###
 *~
