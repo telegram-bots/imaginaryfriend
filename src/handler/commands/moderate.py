@@ -4,7 +4,7 @@ from src.config import config, trigram_repository
 
 class Moderate(Base):
     aliases = ['mod_f', 'mod_d']
-    super_admins = config.getlist('bot', 'god_mode')
+    super_admins = [int(id) for id in config.getlist('bot', 'god_mode')]
 
     @staticmethod
     def execute(bot, command):

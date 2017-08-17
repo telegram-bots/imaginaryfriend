@@ -7,8 +7,9 @@ mod_f - (ADMIN ONLY) Find word to remove
 mod_d - (ADMIN ONLY) Remove given word
 meow - Random cat pic
 borscht - Random borscht pic
-vzhuh и текст - Create вжух meme with «вжух и текст» caption
 woof - Random dog pic
 boobs - Random boobs pic
 butts - Random butt pic
 xkcd - Random xkcd comic
+o – Random facepalm pic
+vzhuh и текст - Create вжух meme with «вжух и текст» caption

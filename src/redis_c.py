@@ -1,4 +1,6 @@
 import redis
+from redis.exceptions import BusyLoadingError
+from retry import retry
 
 
 class Redis:
@@ -9,6 +11,11 @@ class Redis:
         self.pool = redis.ConnectionPool(host=config['redis']['host'],
                                          port=config.getint('redis', 'port'),
                                          db=config['redis']['db'])
+        self.__ensure_dataset_loaded()
 
     def instance(self):
         return redis.Redis(connection_pool=self.pool)
+
+    @retry(BusyLoadingError, tries=5, delay=10)
+    def __ensure_dataset_loaded(self):
+        self.instance().ping()
