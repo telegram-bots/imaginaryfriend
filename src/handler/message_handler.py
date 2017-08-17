@@ -4,6 +4,7 @@ from random import choice
 from src.config import config, data_learner, reply_generator, media_checker, chance_repository
 from telegram.ext import MessageHandler as ParentHandler, Filters
 from telegram import ChatAction
+from telegram.ext.dispatcher import run_async
 from src.domain.message import Message
 
 
@@ -19,6 +20,7 @@ class MessageHandler(ParentHandler):
         self.spam_stickers = config.getlist('bot', 'spam_stickers')
         self.media_checker_messages = config.getlist('media_checker', 'messages')
 
+    @run_async
     def handle(self, bot, update):
         chance = self.chance_repository.get(update.message.chat.id)
         message = Message(chance=chance, message=update.message)
