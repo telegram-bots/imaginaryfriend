@@ -2,14 +2,15 @@ version: '2.1'
 services:
   bot:
     build: .
-    command: python run.py
     volumes:
       - .:/code
     depends_on:
       - redis
     restart: unless-stopped
   redis:
-    image: redis:3.2.8-alpine
+    image: healthcheck/redis:alpine
     volumes:
       - ./storage:/data
+    ports:
+      - "6379:6379"
     restart: unless-stopped

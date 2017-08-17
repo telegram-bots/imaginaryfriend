@@ -5,7 +5,7 @@ import os
 encoding = 'utf-8'
 
 sections = {
-    'bot': ['token', 'name', 'anchors', 'purge_interval', 'default_chance', 'spam_stickers'],
+    'bot': ['token', 'name', 'anchors', 'god_mode', 'purge_interval', 'default_chance', 'spam_stickers'],
     'grammar': ['chain_length', 'separator', 'stop_word', 'end_sentence', 'all'],
     'logging': ['level'],
     'updates': ['mode'],

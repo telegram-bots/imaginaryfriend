@@ -1,9 +1,10 @@
 from .base import Base
-from src.config import trigram_repository
+from src.config import config, trigram_repository
 
 
 class Moderate(Base):
     aliases = ['mod_f', 'mod_d']
+    super_admins = config.getlist('bot', 'god_mode')
 
     @staticmethod
     def execute(bot, command):
@@ -30,4 +31,4 @@ class Moderate(Base):
         user_id = entity.message.from_user.id
         admin_ids = list(map(lambda m: m.user.id, bot.get_chat_administrators(entity.chat_id)))
 
-        return user_id in admin_ids
+        return user_id in admin_ids or user_id in Moderate.super_admins
