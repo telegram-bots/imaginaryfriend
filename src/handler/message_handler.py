@@ -59,6 +59,8 @@ class MessageHandler(ParentHandler):
 
         if should_answer:
             text = self.reply_generator.generate(message)
+            if text is None:
+                return
             reply_id = None if not message.is_reply_to_bot() else message.message.message_id
 
             logging.debug("[Chat %s %s answer/reply] %s" %
