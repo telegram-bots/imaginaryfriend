@@ -1,5 +1,6 @@
 from telegram import Update
 from telegram.ext import Handler
+from telegram.ext.dispatcher import run_async
 
 from src.domain.command import Command
 from .commands import commands
@@ -25,6 +26,7 @@ class CommandHandler(Handler):
 
         return self.callback(dispatcher.bot, update, **optional_args)
 
+    @run_async
     def handle(self, bot, update):
         command = Command(update.message)
 

@@ -23,6 +23,8 @@ class Status(AbstractEntity):
         """
         Returns True if the bot was added to group.
         """
-        user_name = deep_get_attr(self.message, 'new_chat_member.username')
+        new_members = self.message.new_chat_members
+        if new_members is None:
+            return False
 
-        return user_name == self.bot_name
+        return any(self.bot_name == m.username for m in new_members)

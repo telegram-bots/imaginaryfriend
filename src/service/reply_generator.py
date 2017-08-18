@@ -35,9 +35,10 @@ class ReplyGenerator:
         
         # TODO explain why it returns what it returns
         messages = [self.__generate_best_message(chat_id=message.chat_id, pair=pair) for pair in pairs]
-        longest_message = max(messages, key=len) if len(messages) else ''
+        longest_message = max(messages, key=len) if len(messages) else None
+
         if longest_message and strings_has_equal_letters(longest_message, ''.join(words)):
-            return ''
+            return None
 
         return longest_message
 

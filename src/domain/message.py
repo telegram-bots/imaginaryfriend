@@ -24,7 +24,7 @@ class Message(AbstractEntity):
         """
         Returns True if the message has text.
         """
-        return self.message.text.strip() != ''
+        return self.message.text is not None and self.message.text.strip() != ''
 
     def is_sticker(self):
         """
