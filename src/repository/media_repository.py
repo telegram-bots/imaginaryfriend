@@ -19,18 +19,18 @@ class MediaRepository(RedisRepository):
             .instance() \
             .zremrangebyscore(self.source_name.format(chat_id), 0, dt.timestamp())
 
-    def is_exists(self, chat_id, media_list):
+    def is_exists(self, chat_id, medias):
         """
         Checks that at least one media entry is already in storage
         :param chat_id: ID of chat
-        :param media_list: List of media entries
+        :param medias: Iterable of media entries
         :return: True, if at least one media entry already exists in storage
         """
         delete_at = (datetime.now() + self.lifetime).timestamp()
         pipe = self.redis.instance().pipeline()
         key = self.source_name.format(chat_id)
 
-        for media in media_list:
+        for media in medias:
             pipe.zadd(key, media, delete_at)
 
         return any(x == 0 for x in pipe.execute())

@@ -4,13 +4,13 @@ from telegram.ext import Handler
 from telegram.ext.dispatcher import run_async
 
 from src.domain.command import Command
-from .commands import commands
+from .commands import command_handlers
 
 
 class CommandHandler(Handler):
     def __init__(self):
         super(CommandHandler, self).__init__(self.handle)
-        self.commands = commands
+        self.handlers = command_handlers
 
     def check_update(self, update):
         if isinstance(update, Update) and update.message:
@@ -18,7 +18,7 @@ class CommandHandler(Handler):
 
             return message.text \
                    and message.text.startswith('/') \
-                   and Command.parse_name(message) in self.commands
+                   and Command.parse_name(message) in self.handlers
         else:
             return False
 
@@ -29,17 +29,10 @@ class CommandHandler(Handler):
 
     @run_async
     def handle(self, bot, update):
-        data = Command(update.message)
-        logging.debug(f"Incoming command: {data}")
+        command = Command(update.message)
+        logging.debug(f"Incoming command: {command}")
 
-        try:
-            command = self.commands[data.name]
-            if command.bot is None:
-                command.bot = bot
-            command.execute(data)
-        except (KeyError, IndexError, ValueError):
-            bot.send_message(
-                chat_id=data.chat_id,
-                reply_to_message_id=data.message.message_id,
-                text='Invalid command! Type /help'
-            )
+        handler = self.handlers[command.name]
+        if handler.bot is None:
+            handler.bot = bot
+        handler.execute(command)

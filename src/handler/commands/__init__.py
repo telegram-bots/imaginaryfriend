@@ -15,13 +15,13 @@ from src.handler.commands.vzhuh import Vzhuh
 from src.handler.commands.woof import Woof
 from src.handler.commands.xkcd import XKCD
 
-commands = {}
+command_handlers = {}
 for clazz in Base.__subclasses__():
     command_name = getattr(clazz, 'name')
     command_aliases = getattr(clazz, 'aliases')
     instance = clazz()
 
     if command_name is not None:
-        commands[command_name] = instance
+        command_handlers[command_name] = instance
     for command_alias in command_aliases:
-        commands[command_alias] = instance
+        command_handlers[command_alias] = instance

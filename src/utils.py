@@ -1,4 +1,3 @@
-import random
 import re
 
 
@@ -11,10 +10,6 @@ def strings_has_equal_letters(str1, str2):
         return re.sub(r'[\W_]', '', string).lower()
 
     return clear_symbols(str1) == clear_symbols(str2)
-
-
-def random_element(xlist):
-    return random.choice(xlist) if len(xlist) > 0 else None
 
 
 def deep_get_attr(obj, attr, default=None):

@@ -1,5 +1,5 @@
 import re
-from src.utils import random_element
+from random import choice
 from src.config import config
 
 
@@ -35,7 +35,7 @@ class Tokenizer:
         return list(filter(None, map(self.prettify, ''.join(symbols).split(' '))))
 
     def random_end_sentence_token(self):
-        return random_element(list(self.endsen))
+        return choice(list(self.endsen))
 
     def remove_garbage_entities(self, message):
         encoding = 'utf-16-le'

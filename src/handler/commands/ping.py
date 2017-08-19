@@ -1,5 +1,5 @@
 from .base import Base
-from src.utils import random_element
+from random import choice
 
 
 class Ping(Base):
@@ -13,4 +13,4 @@ class Ping(Base):
     ]
 
     def execute(self, command):
-        self.reply(command, random_element(Ping.answers))
+        self.reply(command, choice(self.answers))
