@@ -11,7 +11,6 @@ class Ping(Base):
         'reply',
         'pingback'
     ]
-    
-    @staticmethod
-    def execute(bot, command):
-        Ping.reply(bot, command, random_element(Ping.answers))
+
+    def execute(self, command):
+        self.reply(command, random_element(Ping.answers))

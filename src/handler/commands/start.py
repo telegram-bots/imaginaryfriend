@@ -4,6 +4,5 @@ from .base import Base
 class Start(Base):
     name = 'start'
 
-    @staticmethod
-    def execute(bot, command):
-        Start.reply(bot, command, 'Hi! :3')
+    def execute(self, command):
+        self.reply(command, 'Hi! :3')

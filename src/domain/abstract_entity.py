@@ -20,3 +20,6 @@ class AbstractEntity(ABC):
         """Returns True if the message was edited.
         """
         return self.message.edit_date is not None
+
+    def __str__(self):
+        return str(self.__dict__)

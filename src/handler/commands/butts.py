@@ -1,5 +1,6 @@
 from .base import Base
 import json
+from src.config import encoding
 from urllib.request import urlopen
 
 
@@ -7,10 +8,9 @@ class Butts(Base):
     name = 'butts'
     aliases = ['(_._)', '(_*_)', '(Y)']
 
-    @staticmethod
-    def execute(bot, command):
+    def execute(self, command):
         response = urlopen('http://api.obutts.ru/noise/1')
-        data = json.loads(response.read().decode('utf-8'))
+        data = json.loads(response.read().decode(encoding))
         url = 'http://media.obutts.ru/' + data[0]['preview']
 
-        bot.send_photo(chat_id=command.chat_id, photo=url)
+        self.send_photo(command, photo=url)

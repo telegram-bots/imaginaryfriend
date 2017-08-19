@@ -6,10 +6,8 @@ class Meow(Base):
     name = 'meow'
     aliases = [':3', '=3']
 
-    @staticmethod
-    def execute(bot, command):
+    def execute(self, command):
         opener = build_opener(HTTPRedirectHandler)
-        request = opener.open('http://thecatapi.com/api/images/get?format=src')
-        url = request.url
+        req = opener.open('http://thecatapi.com/api/images/get?format=src')
 
-        bot.send_photo(chat_id=command.chat_id, photo=url)
+        self.send_photo(command, photo=req.url)

@@ -7,10 +7,10 @@ from urllib.request import urlopen
 class XKCD(Base):
     name = 'xkcd'
 
-    @staticmethod
-    def execute(bot, command):
+    def execute(self, command):
         last_id = json.loads(urlopen("http://xkcd.com/info.0.json").read().decode('utf-8'))['num']
-        id = random.randint(1, last_id)
-        url = json.loads(urlopen('http://xkcd.com/' + str(id) + '/info.0.json').read().decode('utf-8'))['img']
+        random_id = random.randint(1, last_id)
+        req = urlopen('http://xkcd.com/%d/info.0.json' % random_id)
+        data = json.loads(req.read().decode('utf-8'))
 
-        bot.send_photo(chat_id=command.chat_id, photo=url)
+        self.send_photo(command, photo=data['img'])

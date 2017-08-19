@@ -1,16 +1,16 @@
 from .base import Base
 import json
 from urllib.request import urlopen
+from src.config import encoding
 
 
 class Boobs(Base):
     name = 'boobs'
     aliases = ['80085', '(.)(.)']
 
-    @staticmethod
-    def execute(bot, command):
+    def execute(self, command):
         response = urlopen('http://api.oboobs.ru/noise/1')
-        data = json.loads(response.read().decode('utf-8'))
+        data = json.loads(response.read().decode(encoding))
         url = 'http://media.oboobs.ru/' + data[0]['preview']
 
-        bot.send_photo(chat_id=command.chat_id, photo=url)
+        self.send_photo(command, photo=url)

@@ -1,3 +1,4 @@
+import logging
 from telegram import Update
 from telegram.ext import Handler
 from telegram.ext.dispatcher import run_async
@@ -28,11 +29,17 @@ class CommandHandler(Handler):
 
     @run_async
     def handle(self, bot, update):
-        command = Command(update.message)
+        data = Command(update.message)
+        logging.debug(f"Incoming command: {data}")
 
         try:
-            self.commands[command.name](bot, command)
-        except (IndexError, ValueError):
-            bot.send_message(chat_id=command.chat_id,
-                             reply_to_message_id=command.message.message_id,
-                             text='Invalid command! Type /help')
+            command = self.commands[data.name]
+            if command.bot is None:
+                command.bot = bot
+            command.execute(data)
+        except (KeyError, IndexError, ValueError):
+            bot.send_message(
+                chat_id=data.chat_id,
+                reply_to_message_id=data.message.message_id,
+                text='Invalid command! Type /help'
+            )
