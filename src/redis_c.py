@@ -16,6 +16,6 @@ class Redis:
     def instance(self):
         return redis.Redis(connection_pool=self.pool)
 
-    @retry(BusyLoadingError, tries=5, delay=10)
+    @retry(BusyLoadingError, tries=5, delay=10, logger=None)
     def __ensure_dataset_loaded(self):
         self.instance().ping()

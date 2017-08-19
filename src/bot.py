@@ -17,9 +17,11 @@ class Bot:
     def run(self):
         logging.info("Bot started")
 
+        purge_queue_instance = chat_purge_queue.instance(self.updater.job_queue)
+
         self.dispatcher.add_handler(MessageHandler())
         self.dispatcher.add_handler(CommandHandler())
-        self.dispatcher.add_handler(StatusHandler(chat_purge_queue.instance(self.updater.job_queue)))
+        self.dispatcher.add_handler(StatusHandler(chat_purge_queue=purge_queue_instance))
 
         if config['updates']['mode'] == 'polling':
             self.updater.start_polling()
