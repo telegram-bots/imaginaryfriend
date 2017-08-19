@@ -1,5 +1,5 @@
 from .base import Base
-from src.config import trigram_repository
+from src.component.config import trigram_repository
 
 
 class GetStats(Base):

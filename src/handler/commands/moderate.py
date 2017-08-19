@@ -1,5 +1,5 @@
 from .base import Base
-from src.config import config, trigram_repository
+from src.component.config import config, trigram_repository
 
 
 class Moderate(Base):

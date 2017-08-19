@@ -2,7 +2,7 @@ import logging
 
 from datetime import datetime, timedelta
 from telegram.ext import Job
-from src.config import config, trigram_repository, job_repository
+from src.component.config import config, trigram_repository, job_repository
 
 
 class ChatPurgeQueue:

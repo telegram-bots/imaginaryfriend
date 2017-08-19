@@ -1,7 +1,7 @@
 from .base import Base
 import json
 from random import choice
-from src.config import encoding
+from src.component.config import encoding
 from urllib.request import urlopen
 
 

@@ -1,5 +1,5 @@
 from .base import Base
-from src.config import chance_repository
+from src.component.config import chance_repository
 
 
 class Chance(Base):

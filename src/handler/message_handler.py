@@ -1,4 +1,4 @@
-from src.config import chance_repository
+from src.component.config import chance_repository
 from telegram.ext import MessageHandler as ParentHandler, Filters
 from telegram.ext.dispatcher import run_async
 from src.domain.message import Message

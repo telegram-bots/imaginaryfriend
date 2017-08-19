@@ -1,5 +1,6 @@
-from src.config import config, redis, tokenizer, trigram_repository
-from src.utils import strings_has_equal_letters, capitalize
+import re
+from src.component.config import config, redis, tokenizer, trigram_repository
+from src.utils import capitalize
 
 
 class ReplyGenerator:
@@ -47,7 +48,7 @@ class ReplyGenerator:
         messages = [self.__generate_best_message(chat_id=message.chat_id, pair=pair) for pair in pairs]
         longest_message = max(messages, key=len) if len(messages) else None
 
-        if longest_message and strings_has_equal_letters(longest_message, ''.join(words)):
+        if longest_message and self.__strings_has_equal_letters(longest_message, ''.join(words)):
             return None
 
         return longest_message
@@ -131,3 +132,9 @@ class ReplyGenerator:
         """
 
         return sentence
+
+    def __strings_has_equal_letters(self, str1, str2):
+        def clear_symbols(string):
+            return re.sub(r'[\W_]', '', string).lower()
+
+        return clear_symbols(str1) == clear_symbols(str2)

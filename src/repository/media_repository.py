@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from src.config import config
+from src.component.config import config
 from . import RedisRepository
 
 

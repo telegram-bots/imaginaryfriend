@@ -1,4 +1,4 @@
-from src.config import trigram_repository, tokenizer
+from src.component.config import trigram_repository, tokenizer
 
 
 class DataLearner:

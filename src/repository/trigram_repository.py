@@ -1,5 +1,5 @@
 from . import RedisRepository
-from src.config import config, encoding
+from src.component.config import config, encoding
 
 
 class TrigramRepository(RedisRepository):

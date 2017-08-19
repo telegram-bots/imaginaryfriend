@@ -4,6 +4,7 @@ services:
     build: .
     volumes:
       - .:/code
+      - ./storage:/data
     depends_on:
       - redis
     restart: unless-stopped

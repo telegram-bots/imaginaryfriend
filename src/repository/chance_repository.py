@@ -1,5 +1,5 @@
 from . import RedisRepository
-from src.config import config
+from src.component.config import config
 
 
 class ChanceRepository(RedisRepository):

@@ -1,6 +1,6 @@
 from .base import Base
 import json
-from src.config import encoding
+from src.component.config import encoding
 from urllib.request import urlopen
 
 

@@ -1,5 +1,5 @@
 from . import BaseRepository
-from src.config import redis, encoding
+from src.component.config import redis, encoding
 
 
 class RedisRepository(BaseRepository):

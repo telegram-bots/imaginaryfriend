@@ -2,7 +2,7 @@ import logging
 
 from telegram.ext import Updater
 
-from src.config import config, chat_purge_queue
+from src.component.config import config, chat_purge_queue
 from src.handler import *
 
 

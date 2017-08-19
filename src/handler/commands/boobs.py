@@ -1,7 +1,7 @@
 from .base import Base
 import json
 from urllib.request import urlopen
-from src.config import encoding
+from src.component.config import encoding
 
 
 class Boobs(Base):

@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.config import media_repository
+from src.component.config import media_repository
 from urllib.parse import urlparse
 from itertools import chain
 

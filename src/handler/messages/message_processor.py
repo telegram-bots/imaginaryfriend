@@ -1,7 +1,7 @@
 import logging
 from .base import Base
 from telegram import ChatAction
-from src.config import data_learner, reply_generator
+from src.component.config import data_learner, reply_generator
 
 
 class MessageProcessor(Base):

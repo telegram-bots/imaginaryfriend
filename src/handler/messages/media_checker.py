@@ -1,7 +1,7 @@
 import logging
 from .base import Base
 from random import choice
-from src.config import config, media_checker
+from src.component.config import config, media_checker
 
 
 class MediaChecker(Base):

@@ -1,7 +1,7 @@
 import random
 from .abstract_entity import AbstractEntity
 from src.utils import deep_get_attr
-from src.config import config
+from src.component.config import config
 
 
 class Message(AbstractEntity):

@@ -56,17 +56,17 @@ ImaginaryFriend can:
 
 ### Setup using Docker
 1. Install [Docker](https://store.docker.com/search?offering=community&type=edition)
-2. Open `cfg` dir and rename `main.docker.cfg.example` to `main.docker.cfg`.
+2. Open `cfg` dir and rename `app.docker.conf.example` to `app.conf`.
 3. Talk to [@botfather](https://t.me/botfather) and create your own bot.
-4. Open `main.docker.cfg` file in text editor, paste your newly created bot token into `bot`.`token` property and your bot name (with Bot postfix) into `bot`.`name` property.
+4. Open `app.conf` file in text editor, paste your newly created bot token into `bot`.`token` property and your bot name (with Bot postfix) into `bot`.`name` property.
 5. Execute `docker-compose up`. Congrats! You now have ImaginaryFriend of your own!
 
 ### Setup without Docker
 1. Install [Python >= 3.5.2](https://www.python.org/downloads/)
 2. Install [Redis >= 3.2](https://redis.io/download)
 3. Install dependencies with PIP by executing command `pip install -r requirements.txt`
-4. Open `cfg` dir and rename `main.plain.cfg.example` to `main.plain.cfg`
+4. Open `cfg` dir and rename `app.plain.conf.example` to `app.conf`
 5. Talk to [@botfather](https://t.me/botfather) and create your own bot.
-6. Open `main.plain.cfg` file in text editor, paste your newly created bot token into `bot`.`token` property and your bot name (with Bot postfix) into `bot`.`name` property.
+6. Open `app.conf` file in text editor, paste your newly created bot token into `bot`.`token` property and your bot name (with Bot postfix) into `bot`.`name` property.
 7. (Optionally) Configure `updates` property for websocket support and `redis` property to point to your Redis instance.
 8. Execute the `python run.py`

@@ -1,6 +1,6 @@
 import re
 from random import choice
-from src.config import config
+from src.component.config import config
 
 
 class Tokenizer:

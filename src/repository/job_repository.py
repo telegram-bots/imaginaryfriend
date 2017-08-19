@@ -1,5 +1,5 @@
 from . import RedisRepository
-from src.config import encoding
+from src.component.config import encoding
 import json
 
 
