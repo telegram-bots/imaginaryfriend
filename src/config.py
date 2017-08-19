@@ -6,7 +6,7 @@ encoding = 'utf-8'
 
 sections = {
     'bot': ['token', 'name', 'anchors', 'god_mode', 'purge_interval', 'default_chance', 'spam_stickers'],
-    'grammar': ['chain_length', 'separator', 'stop_word', 'end_sentence', 'all'],
+    'grammar': ['chain_len', 'sep', 'stop_word', 'max_wrds', 'max_msgs', 'endsen', 'garbage', 'garbage_entities'],
     'logging': ['level'],
     'updates': ['mode'],
     'media_checker': ['lifetime', 'messages'],
