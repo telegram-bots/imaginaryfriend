@@ -121,10 +121,9 @@ class ReplyGenerator:
              то добавляем ему случайную (?!.) из config.grammar.endsen
             """
             sentence += self.tokenizer.random_end_sentence_token()
-        # sentence = capitalize(sentence)
-        """
-        Чем плохо начало предложения с большой буквы?
-        """
+
+        sentence = capitalize(sentence)
+
         # TODO my intuition tells me we shouldn't return fun(obj), but IDK really
         """
         Не знал о таком стандарте в питоне или что это плохо, зачем лишняя переменная?
