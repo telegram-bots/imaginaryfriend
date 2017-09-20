@@ -6,7 +6,7 @@ class TrigramRepository(RedisRepository):
     def __init__(self):
         RedisRepository.__init__(self, source_name='trigrams:{}:{}')
         self.counter_source = 'trigrams:count:{}'
-        self.separator = config['grammar']['separator']
+        self.separator = config['grammar']['sep']
         self.stop_word = config['grammar']['stop_word']
 
     def store(self, chat_id, trigrams):

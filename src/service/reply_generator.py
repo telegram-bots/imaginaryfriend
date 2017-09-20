@@ -89,8 +89,7 @@ class ReplyGenerator:
         for _ in range(self.max_wrds):
             words = key.split(self.sep)
 
-            # Исправил ошибку тут !!!!!!
-            gen_words.append(words[0] if len(gen_words) == 0 else words[1])
+            gen_words.append(words[1])
 
             next_word = self.trigram_repository.get_random_reply(chat_id, key)
             if next_word is None:
