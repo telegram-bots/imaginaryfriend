@@ -55,7 +55,7 @@ class Tokenizer:
 
         result += utf16bytes[cur_pos:]
 
-        return utf16bytes.decode(encoding)
+        return result.decode(encoding)
 
     def prettify(self, word):
         lowercase_word = word.lower().strip()
