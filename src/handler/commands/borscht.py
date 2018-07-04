@@ -1,23 +1,16 @@
 from .base import Base
-import json
-from src.utils import random_element
-from src.config import encoding
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 
 
 class Borscht(Base):
     name = 'borscht'
-    images = None
-
-    def __init__(self):
-        super().__init__()
-        self.images = self.__preload()
+    path = 'storage/borscht.jpg'
+    headers = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36"}
 
     def execute(self, command):
-        self.send_photo(command, photo=random_element(Borscht.images))
+        req = Request("http://loremflickr.com/500/410/borscht,soup/all", headers=self.headers)
+        output = open(self.path, "wb")
+        output.write(urlopen(req).read())
+        output.close()
 
-    def __preload(self):
-        response = urlopen('https://api.cognitive.microsoft.com/bing/v5.0/images/search?q=%D0%B1%D0%BE%D1%80%D1%89&mkt=en-us&safe-search=strict&image-type=photo&subscription-key=dd95294bc02748a1ab5152d36fdbbdac')
-        data = json.loads(response.read().decode(encoding))
-
-        return list(map(lambda e: e['contentUrl'], data['value']))
+        self.send_photo(command, photo=open(self.path, 'rb'))
