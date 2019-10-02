@@ -1,5 +1,6 @@
 from .base import Base
 from urllib.request import build_opener, HTTPRedirectHandler
+import json
 
 
 class Meow(Base):
@@ -8,6 +9,7 @@ class Meow(Base):
 
     def execute(self, command):
         opener = build_opener(HTTPRedirectHandler)
-        req = opener.open('http://thecatapi.com/api/images/get?format=src')
+        with opener.open('https://api.thecatapi.com/v1/images/search') as r:
+            cats = json.loads(r.read())
 
-        self.send_photo(command, photo=req.url)
+        self.send_photo(command, photo=cats[0]['url'])
